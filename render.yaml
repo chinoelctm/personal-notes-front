@@ -1,0 +1,16 @@
+# Blueprint de Render: publica el front como Static Site gratuito.
+services:
+  - type: web
+    name: personal-notes-front
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist/personal-notes/browser
+    envVars:
+      # Angular 17 soporta Node 18/20
+      - key: NODE_VERSION
+        value: "20"
+    routes:
+      # SPA: cualquier ruta la resuelve Angular
+      - type: rewrite
+        source: /*
+        destination: /index.html

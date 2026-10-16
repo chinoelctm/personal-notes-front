@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #a1a1aa;
+  border-radius: 9999px;
+}
+
+.scroll-oscuro::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+}
+
+.fade-enter {
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Táctil: en pantallas de teléfono todo elemento interactivo mide al menos 44x44 px (WCAG 2.5.5)
+@media (max-width: 767px) {
+  button,
+  a[href],
+  select,
+  summary,
+  label[for],
+  [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  input:not([type='checkbox']):not([type='radio']):not([type='file']),
+  textarea {
+    min-height: 44px;
+  }
+}
+
+// ---------- Contenido de una nota (editor y lectura) ----------
+
+.contenido-nota {
+  @apply text-slate-700 dark:text-slate-200 text-base leading-relaxed break-words;
+
+  &:empty::before {
+    content: attr(data-placeholder);
+    @apply text-slate-400 pointer-events-none block;
+  }
+
+  h1 { @apply text-2xl font-bold text-slate-900 dark:text-white mt-6 mb-3; }
+  h2 { @apply text-xl font-bold text-slate-900 dark:text-white mt-6 mb-2; }
+  h3 { @apply text-lg font-semibold text-slate-900 dark:text-white mt-4 mb-2; }
+  p { @apply my-2; }
+  a { @apply text-indigo-600 dark:text-indigo-400 underline; }
+  ul { @apply list-disc pl-6 my-3; }
+  ol { @apply list-decimal pl-6 my-3; }
+
+  blockquote {
+    @apply border-l-4 border-indigo-500 pl-4 my-4 italic text-slate-600 dark:text-slate-300;
+  }
+
+  // Imágenes incrustadas en Base64: nunca más anchas que la hoja
+  img {
+    max-width: 100%;
+    height: auto;
+    @apply rounded-lg my-4 shadow-sm inline-block;
+  }
+
+  // Bloques de código: fondo oscuro y fuente monoespaciada, con scroll propio
+  pre {
+    @apply bg-[#1e1e24] text-slate-100 rounded-lg my-4 px-5 py-4 overflow-x-auto font-mono text-sm leading-normal;
+    white-space: pre;
+  }
+
+  code {
+    @apply font-mono text-[0.9em];
+  }
+
+  :not(pre) > code {
+    @apply bg-slate-100 dark:bg-slate-700 text-rose-600 dark:text-rose-300 rounded px-1 py-0.5;
+  }
+
+  // Tablas dinámicas: el contenedor desplaza en horizontal en pantallas chicas
+  .tabla-desplazable {
+    @apply overflow-x-auto my-4 max-w-full;
+  }
+
+  table {
+    @apply w-full border-collapse;
+  }
+
+  th,
+  td {
+    @apply border border-slate-200 dark:border-slate-600 px-3 py-2 align-top;
+    min-width: 100px;
+  }
+
+  th {
+    @apply bg-slate-50 dark:bg-slate-700/60 font-semibold text-left;
+  }
+}
+
+// Tablas pegadas sin contenedor: también desplazan en el teléfono
+@media (max-width: 767px) {
+  .contenido-nota table {
+    display: block;
+    overflow-x: auto;
+  }
+}

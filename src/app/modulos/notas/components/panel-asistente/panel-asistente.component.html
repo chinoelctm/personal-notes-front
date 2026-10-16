@@ -1,0 +1,119 @@
+<!-- Fondo -->
+<div class="fixed inset-0 bg-black/50 z-50 transition-opacity duration-200" [class.opacity-0]="!asistente.abierto()" [class.pointer-events-none]="!asistente.abierto()"
+     (click)="asistente.cerrar()" aria-hidden="true"></div>
+
+<!-- Panel lateral colapsable -->
+<aside class="fixed inset-y-0 right-0 w-full sm:w-96 bg-white dark:bg-slate-800 shadow-2xl border-l border-slate-200 dark:border-slate-700 flex flex-col z-50 transition-transform duration-300 ease-in-out"
+       [class.translate-x-full]="!asistente.abierto()" [attr.aria-hidden]="!asistente.abierto()" [attr.inert]="asistente.abierto() ? null : ''"
+       role="complementary" aria-label="Asistente de IA">
+  <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900 flex items-center justify-center">
+        <app-icono nombre="sparkles" clase="w-5 h-5" />
+      </div>
+      <div>
+        <h2 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+          Asistente Gemini
+          <span class="w-2 h-2 rounded-full" [class]="asistente.disponible() ? 'bg-emerald-500' : 'bg-amber-500'" [title]="asistente.disponible() ? 'Asistente disponible' : 'Asistente no configurado en el servidor'"></span>
+        </h2>
+        <p class="text-[11px] text-slate-400">{{ asistente.estado()?.provider ?? 'Google Gemini' }} · {{ asistente.estado()?.model ?? 'vía API' }}</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1">
+      <button type="button" (click)="asistente.cerrar()" class="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition" title="Cerrar panel">
+        <app-icono nombre="x" clase="w-5 h-5" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Contexto adjunto -->
+  <div class="px-3 py-2 bg-indigo-50/60 dark:bg-indigo-950/40 border-b border-indigo-100 dark:border-indigo-900 flex items-center justify-between gap-2 text-xs text-indigo-900 dark:text-indigo-200">
+    <div class="flex items-center gap-1.5 min-w-0">
+      <app-icono nombre="file-text" clase="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+      <span class="font-medium truncate">Contexto: {{ asistente.contexto()?.titulo ?? 'General (sin documento)' }}</span>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      @if (asistente.contexto()) {
+        <button type="button" (click)="asistente.quitarContexto()" class="text-[11px] text-indigo-600 dark:text-indigo-300 hover:underline font-semibold">Quitar</button>
+      } @else if (store.borrador()) {
+        <button type="button" (click)="adjuntarDocumentoActivo()" class="text-[11px] text-indigo-600 dark:text-indigo-300 hover:underline font-semibold">Preguntar sobre este documento</button>
+      }
+      <button type="button" (click)="asistente.limpiarChat()" class="text-[11px] text-slate-500 hover:underline">Limpiar</button>
+    </div>
+  </div>
+
+  <!-- Sugerencias -->
+  <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40 flex items-center gap-1.5 overflow-x-auto text-xs">
+    <span class="text-slate-400 text-[11px] shrink-0">Sugerencias:</span>
+    @for (sugerencia of asistente.sugerencias; track sugerencia.etiqueta) {
+      <button type="button" (click)="enviar(sugerencia.prompt)" [disabled]="asistente.pensando()" class="px-2.5 py-1 bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 rounded-md text-[11px] font-medium whitespace-nowrap transition disabled:opacity-50">{{ sugerencia.etiqueta }}</button>
+    }
+  </div>
+
+  <!-- Conversación -->
+  <div #conversacion class="flex-1 overflow-y-auto p-4 space-y-3 text-xs bg-slate-50 dark:bg-slate-900" aria-live="polite">
+    @if (asistente.mensajes().length === 0) {
+      <div class="flex gap-2.5">
+        <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><app-icono nombre="bot" /></div>
+        <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl p-3 text-slate-700 dark:text-slate-200 leading-relaxed shadow-sm max-w-[85%]">
+          <p class="font-semibold text-slate-900 dark:text-white mb-1">¡Hola! Soy tu asistente de notas.</p>
+          <p>Puedo redactar, resumir, revisar código o responder preguntas sobre el documento que estés editando.</p>
+          @if (!asistente.disponible()) {
+            <p class="mt-2 text-[11px] text-amber-600 dark:text-amber-400">El asistente aún no está configurado en el servidor: falta la API Key de Gemini (<code class="font-mono">Gemini:ApiKey</code>).</p>
+          }
+        </div>
+      </div>
+    }
+
+    @for (mensaje of asistente.mensajes(); track $index) {
+      @switch (mensaje.rol) {
+        @case ('usuario') {
+          <div class="flex justify-end">
+            <div class="bg-indigo-600 text-white rounded-2xl rounded-br-md px-3 py-2 max-w-[85%] whitespace-pre-wrap break-words">{{ mensaje.texto }}</div>
+          </div>
+        }
+        @case ('asistente') {
+          <div class="flex gap-2.5">
+            <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><app-icono nombre="bot" /></div>
+            <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl rounded-tl-md p-3 text-slate-700 dark:text-slate-200 leading-relaxed shadow-sm max-w-[85%] whitespace-pre-wrap break-words">{{ mensaje.texto }}</div>
+          </div>
+        }
+        @case ('error') {
+          <div class="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 rounded-xl px-3 py-2 flex items-start gap-2">
+            <app-icono nombre="alert-circle" class="mt-0.5" />
+            <span>{{ mensaje.texto }}</span>
+          </div>
+        }
+        @default {
+          <div class="text-center text-[11px] text-slate-400 italic">{{ mensaje.texto }}</div>
+        }
+      }
+    }
+
+    @if (asistente.pensando()) {
+      <div class="flex gap-2.5" role="status">
+        <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><app-icono nombre="bot" /></div>
+        <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl p-3 text-slate-500 dark:text-slate-300 shadow-sm flex items-center gap-2">
+          <span class="flex gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:150ms]"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:300ms]"></span>
+          </span>
+          Pensando...
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="p-3 border-t border-slate-200 dark:border-slate-700">
+    <form class="flex items-center gap-2" (ngSubmit)="enviar(pregunta)">
+      <input name="pregunta" type="text" [(ngModel)]="pregunta" autocomplete="off" aria-label="Pregunta para el asistente"
+             [placeholder]="asistente.contexto() ? 'Pregunta sobre ' + asistente.contexto()!.titulo + '…' : 'Pregunta al asistente…'"
+             class="flex-1 min-w-0 text-sm px-3.5 py-2.5 bg-slate-100 dark:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 rounded-xl border border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 outline-none text-slate-800 dark:text-slate-100 transition placeholder:text-slate-400">
+      <button type="submit" [disabled]="asistente.pensando() || !pregunta.trim()" class="w-11 h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center shadow-sm transition disabled:opacity-50 shrink-0" title="Enviar">
+        <app-icono nombre="send" />
+      </button>
+    </form>
+    <p class="text-[10px] text-slate-400 mt-2 px-1">Las consultas pasan por la API de notas; la API Key de Gemini nunca llega al navegador.</p>
+  </div>
+</aside>

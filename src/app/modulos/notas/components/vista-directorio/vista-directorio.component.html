@@ -1,0 +1,109 @@
+@if (store.carpetaSeleccionada(); as carpeta) {
+  <section class="flex-1 overflow-y-auto" aria-labelledby="titulo-directorio">
+    <!-- Encabezado de la carpeta -->
+    <div class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 shadow-sm">
+      <div class="max-w-6xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div class="min-w-0">
+          <!-- Ruta navegable -->
+          <nav class="flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400 mb-1.5 overflow-x-auto whitespace-nowrap" aria-label="Ruta de la carpeta">
+            <button type="button" (click)="store.irAInicio()" class="hover:text-indigo-600 dark:hover:text-indigo-400 rounded">Inicio</button>
+            @for (ancestro of ancestros(); track ancestro.id) {
+              <app-icono nombre="chevron-right" clase="w-3 h-3 text-slate-300" />
+              @if (ancestro.id === carpeta.id) {
+                <span class="text-slate-700 dark:text-slate-200 font-semibold">{{ ancestro.name }}</span>
+              } @else {
+                <button type="button" (click)="store.abrirCarpeta(ancestro.id)" class="hover:text-indigo-600 dark:hover:text-indigo-400 rounded">{{ ancestro.name }}</button>
+              }
+            }
+          </nav>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <h1 id="titulo-directorio" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2 min-w-0">
+              <app-icono nombre="folder-open" clase="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <span class="truncate">{{ carpeta.name }}</span>
+            </h1>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-100 dark:border-indigo-900">
+              {{ store.documentosCarpetaSinFiltro().length }} {{ store.documentosCarpetaSinFiltro().length === 1 ? 'nota' : 'notas' }}
+            </span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Nivel {{ carpeta.depth }} · documentos ordenados por última edición.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+          <button type="button" (click)="store.nuevoDocumento(carpeta.id)" class="flex items-center justify-center gap-2 h-11 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium rounded-xl text-sm shadow-sm transition">
+            <app-icono nombre="file-plus" />
+            <span>Crear Nota Aquí</span>
+          </button>
+          @if (puedeTenerSubcarpetas(carpeta.depth)) {
+            <button type="button" (click)="store.abrirModalNuevaCarpeta(carpeta.id)" class="flex items-center justify-center gap-2 h-11 px-3 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-medium transition" title="Crear subcarpeta dentro de esta carpeta">
+              <app-icono nombre="folder-plus" class="text-indigo-600 dark:text-indigo-400" />
+              <span class="hidden sm:inline">Subcarpeta</span>
+            </button>
+          }
+          <button type="button" (click)="store.abrirModalEditarCarpeta(carpeta)" class="flex items-center justify-center h-11 w-11 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-200 rounded-xl transition" title="Renombrar o mover carpeta">
+            <app-icono nombre="edit" />
+          </button>
+          <button type="button" (click)="store.eliminarCarpeta(carpeta)" class="flex items-center justify-center h-11 w-11 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-xl transition" title="Eliminar carpeta">
+            <app-icono nombre="trash" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-4">
+      <!-- Subcarpetas -->
+      @if (store.subcarpetasSeleccionada().length > 0) {
+        <div class="flex flex-wrap gap-2">
+          @for (subcarpeta of store.subcarpetasSeleccionada(); track subcarpeta.id) {
+            <button type="button" (click)="store.abrirCarpeta(subcarpeta.id)" class="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-sm text-slate-700 dark:text-slate-200 transition">
+              <app-icono nombre="folder" class="text-indigo-500" />
+              <span>{{ subcarpeta.name }}</span>
+              <span class="text-[11px] text-slate-400 font-mono">{{ subcarpeta.documentCount }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Filtros por banderita -->
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs" role="group" aria-label="Filtrar por prioridad">
+          <span class="text-slate-400 font-medium mr-1 hidden sm:inline">Filtrar:</span>
+          @for (filtro of filtros; track filtro.valor) {
+            <button type="button" (click)="store.filtroPrioridad.set(filtro.valor)" class="px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition"
+                    [attr.aria-pressed]="store.filtroPrioridad() === filtro.valor"
+                    [class]="store.filtroPrioridad() === filtro.valor ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'">
+              {{ filtro.etiqueta }}
+            </button>
+          }
+        </div>
+        <div class="text-xs text-slate-500 dark:text-slate-400 font-medium hidden md:flex items-center gap-1 shrink-0">
+          <app-icono nombre="arrow-down-narrow-wide" clase="w-3.5 h-3.5" />
+          <span>Ordenado por última edición</span>
+        </div>
+      </div>
+
+      <!-- Cuadrícula responsiva: 1 columna en teléfono, 2 en tablet, 3 en escritorio -->
+      @if (store.documentosCarpeta().length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-12">
+          @for (documento of store.documentosCarpeta(); track documento.id) {
+            <app-tarjeta-documento [documento]="documento" />
+          }
+        </div>
+      } @else {
+        <div class="flex flex-col items-center justify-center text-center py-16 px-4">
+          <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900 text-indigo-500 flex items-center justify-center mb-4">
+            <app-icono nombre="file-question" clase="w-8 h-8" />
+          </div>
+          @if (store.filtroPrioridad() === 'Todas') {
+            <h3 class="text-base font-semibold text-slate-800 dark:text-slate-100">No hay notas en esta carpeta</h3>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-sm mt-1 mb-6">Crea tu primer documento o añade una subcarpeta para organizar tus proyectos.</p>
+            <button type="button" (click)="store.nuevoDocumento(carpeta.id)" class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
+              <app-icono nombre="plus" /> Crear nueva nota
+            </button>
+          } @else {
+            <h3 class="text-base font-semibold text-slate-800 dark:text-slate-100">Ninguna nota con esa prioridad</h3>
+            <button type="button" (click)="store.filtroPrioridad.set('Todas')" class="mt-3 text-sm text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Ver todas</button>
+          }
+        </div>
+      }
+    </div>
+  </section>
+}

@@ -1,0 +1,7 @@
+<div role="status" aria-live="polite"
+     class="fixed bottom-6 left-6 z-50 transform transition-all duration-300 pointer-events-none px-4 py-3 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-lg flex items-center gap-2"
+     [class.translate-y-20]="!toast().visible"
+     [class.opacity-0]="!toast().visible">
+  <span>{{ toast().icono }}</span>
+  <span>{{ toast().mensaje }}</span>
+</div>

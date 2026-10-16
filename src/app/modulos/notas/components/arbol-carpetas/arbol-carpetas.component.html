@@ -1,0 +1,70 @@
+<aside id="explorador" aria-label="Explorador de carpetas"
+       class="fixed md:static top-14 bottom-0 left-0 z-40 w-72 md:w-64 lg:w-72 shrink-0 bg-[#18181b] border-r border-[#27272a] text-zinc-300 flex flex-col transition-transform duration-200 ease-out"
+       [class.max-md:-translate-x-full]="!store.sidebarAbierto()">
+
+  <!-- Herramientas del árbol -->
+  <div class="px-3 py-2 border-b border-zinc-800 flex items-center justify-between">
+    <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+      <app-icono nombre="compass" clase="w-3.5 h-3.5 text-indigo-400" />
+      <span>Explorador</span>
+    </div>
+    <div class="flex items-center gap-0.5">
+      <button type="button" (click)="store.nuevoDocumento()" class="w-8 h-8 flex items-center justify-center rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition" title="Nuevo documento en la carpeta actual">
+        <app-icono nombre="file-plus" />
+      </button>
+      <button type="button" (click)="store.abrirModalNuevaCarpeta(store.carpetaSeleccionadaId())" class="w-8 h-8 flex items-center justify-center rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition" title="Nueva carpeta en la carpeta actual">
+        <app-icono nombre="folder-plus" />
+      </button>
+      <button type="button" (click)="store.colapsarTodo()" class="w-8 h-8 flex items-center justify-center rounded hover:bg-zinc-800 text-zinc-400 hover:text-white transition" title="Colapsar todo">
+        <app-icono nombre="chevrons-up-down" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Acceso fijo al inicio -->
+  <div class="p-2 border-b border-zinc-800 bg-zinc-900/40">
+    <button type="button" (click)="store.irAInicio()" class="w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs font-semibold transition"
+            [class]="store.vista() === 'inicio' ? 'bg-indigo-600 text-white shadow-sm' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white'">
+      <span class="flex items-center gap-2">
+        <app-icono nombre="layout-dashboard" [clase]="store.vista() === 'inicio' ? 'w-4 h-4 text-indigo-200' : 'w-4 h-4 text-indigo-400'" />
+        Inicio / Dashboard
+      </span>
+      <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-200 font-mono" title="Documentos editados en las últimas horas">{{ store.resumen()?.recentlyEdited ?? 0 }} rec</span>
+    </button>
+  </div>
+
+  <!-- Carpeta actual -->
+  @if (store.carpetaSeleccionada(); as carpeta) {
+    <div class="px-3 py-2 bg-zinc-900/60 border-b border-zinc-800/80 flex items-center justify-between gap-2 text-xs text-zinc-400">
+      <span class="truncate flex items-center gap-1.5">
+        <app-icono nombre="folder" clase="w-3.5 h-3.5 text-indigo-400" />
+        <span class="font-medium text-zinc-200 truncate">{{ carpeta.name }}</span>
+      </span>
+      <span class="px-1.5 py-0.5 rounded text-[10px] bg-zinc-800 text-zinc-400 font-mono shrink-0">{{ carpeta.documentCount }} docs</span>
+    </div>
+  }
+
+  <!-- Árbol jerárquico -->
+  <nav class="flex-1 overflow-y-auto scroll-oscuro p-2 space-y-0.5 text-sm" aria-label="Árbol de carpetas y documentos">
+    @for (nodo of store.arbol(); track nodo.carpeta.id) {
+      <app-nodo-arbol [nodo]="nodo" [nivel]="0" />
+    } @empty {
+      <div class="px-3 py-8 text-center text-xs text-zinc-500 space-y-3">
+        <p>Aún no tienes carpetas.</p>
+        <button type="button" (click)="store.abrirModalNuevaCarpeta(null)" class="text-indigo-400 hover:text-indigo-300 font-semibold">Crear la primera carpeta</button>
+      </div>
+    }
+  </nav>
+
+  <!-- Acciones globales -->
+  <div class="p-3 border-t border-zinc-800 bg-zinc-900/80 space-y-2 shrink-0">
+    <button type="button" (click)="store.nuevoDocumento()" class="w-full h-11 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-medium rounded-lg text-sm flex items-center justify-center gap-2 shadow-sm transition">
+      <app-icono nombre="plus-circle" />
+      <span>Nuevo Documento</span>
+    </button>
+    <button type="button" (click)="store.abrirModalNuevaCarpeta(store.carpetaSeleccionadaId())" class="w-full h-10 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 hover:text-white font-medium rounded-lg text-xs flex items-center justify-center gap-2 transition">
+      <app-icono nombre="folder-plus" clase="w-3.5 h-3.5 text-indigo-400" />
+      <span>Nueva Carpeta / Subcarpeta</span>
+    </button>
+  </div>
+</aside>

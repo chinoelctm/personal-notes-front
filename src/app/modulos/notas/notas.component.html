@@ -1,0 +1,39 @@
+<div class="flex-1 min-h-0 flex overflow-hidden relative">
+  <!-- Fondo oscuro al abrir el explorador en el teléfono -->
+  @if (store.sidebarAbierto()) {
+    <div class="fixed inset-x-0 top-14 bottom-0 bg-black/60 z-30 md:hidden fade-enter" (click)="store.cerrarSidebarMovil()" aria-hidden="true"></div>
+  }
+
+  <app-arbol-carpetas />
+
+  <main class="flex-1 min-w-0 flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900">
+    @if (store.cargando() && store.carpetas().length === 0) {
+      <div class="flex-1 flex flex-col items-center justify-center gap-3 text-sm text-slate-500 dark:text-slate-400" role="status">
+        <app-icono nombre="refresh-cw" clase="w-6 h-6 animate-spin text-indigo-500" />
+        <span>Cargando tus notas… (la API gratuita puede tardar un minuto en despertar)</span>
+      </div>
+    } @else {
+      @switch (store.vista()) {
+        @case ('inicio') {
+          <app-panel-inicio />
+        }
+        @case ('directorio') {
+          <app-vista-directorio />
+        }
+        @case ('editor') {
+          <app-editor-documento />
+        }
+        @case ('busqueda') {
+          <app-resultados-busqueda />
+        }
+      }
+    }
+  </main>
+</div>
+
+@if (store.modalCarpeta()) {
+  <app-modal-carpeta />
+}
+
+<app-panel-asistente />
+

@@ -1,0 +1,159 @@
+<section class="flex-1 overflow-y-auto" aria-labelledby="titulo-inicio">
+  <!-- Encabezado -->
+  <div class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 shadow-sm">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">
+          <app-icono nombre="sparkles" clase="w-3.5 h-3.5" />
+          <span>Centro de control</span>
+        </div>
+        <h1 id="titulo-inicio" class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5">
+          <app-icono nombre="layout-dashboard" clase="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
+          <span>Inicio / Acceso Rápido</span>
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Resumen de tus notas, actividad reciente y accesos directos a los documentos más activos.</p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <button type="button" (click)="store.nuevoDocumento()" class="flex items-center justify-center gap-2 h-11 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-medium rounded-xl text-sm shadow-sm transition">
+          <app-icono nombre="plus-circle" />
+          <span>Crear Nota Rápida</span>
+        </button>
+        <button type="button" (click)="store.explorarCarpetas()" class="flex items-center justify-center gap-2 h-11 px-3.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-medium transition" title="Ir al explorador de carpetas">
+          <app-icono nombre="folder-tree" class="text-indigo-600 dark:text-indigo-400" />
+          <span class="hidden sm:inline">Explorar Carpetas</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4 sm:p-6 max-w-6xl mx-auto w-full space-y-6">
+    <!-- Estadísticas (calculadas por la API) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200/90 dark:border-slate-700 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+          <app-icono nombre="file-text" clase="w-5 h-5" />
+        </div>
+        <div class="min-w-0">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Total notas</div>
+          <div class="text-xl font-bold text-slate-900 dark:text-white font-mono">{{ resumen()?.totalDocuments ?? 0 }}</div>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200/90 dark:border-slate-700 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+          <app-icono nombre="clock" clase="w-5 h-5" />
+        </div>
+        <div class="min-w-0">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Recientes ({{ resumen()?.recentWindowHours ?? 24 }}h)</div>
+          <div class="text-xl font-bold text-slate-900 dark:text-white font-mono">{{ resumen()?.recentlyEdited ?? 0 }}</div>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200/90 dark:border-slate-700 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+          <app-icono nombre="alert-circle" clase="w-5 h-5" />
+        </div>
+        <div class="min-w-0">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Prioridad alta</div>
+          <div class="text-xl font-bold text-rose-600 dark:text-rose-400 font-mono">{{ resumen()?.byPriority?.high ?? 0 }}</div>
+        </div>
+      </div>
+      <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200/90 dark:border-slate-700 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+          <app-icono nombre="tag" clase="w-5 h-5" />
+        </div>
+        <div class="min-w-0">
+          <div class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Media / Baja</div>
+          <div class="text-xs font-semibold flex items-center gap-1.5 mt-0.5">
+            <span class="text-amber-600 dark:text-amber-400">{{ resumen()?.byPriority?.medium ?? 0 }} med</span>
+            <span class="text-slate-300 dark:text-slate-600">/</span>
+            <span class="text-emerald-600 dark:text-emerald-400">{{ resumen()?.byPriority?.low ?? 0 }} baj</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Últimos documentos editados (orden calculado en el front) -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 sm:p-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 mb-4 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <app-icono nombre="zap" />
+          </div>
+          <div>
+            <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Últimos {{ cantidadRecientes }} documentos editados</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Acceso rápido a las notas modificadas recientemente en todo el árbol.</p>
+          </div>
+        </div>
+        @if (resumen()?.lastEditedOn) {
+          <span class="text-xs font-medium text-slate-400 flex items-center gap-1">
+            <app-icono nombre="refresh-cw" clase="w-3 h-3 text-indigo-500" />
+            Última edición {{ resumen()?.lastEditedOn | fechaRelativa | lowercase }}
+          </span>
+        }
+      </div>
+
+      <div class="space-y-3">
+        @for (documento of store.recientes(); track documento.id) {
+          <button type="button" (click)="store.abrirDocumento(documento.id)" class="w-full text-left group flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-4 rounded-xl border border-slate-200/90 dark:border-slate-700 hover:border-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/30 hover:shadow-sm transition gap-3">
+            <div class="flex items-start gap-3 min-w-0">
+              <span class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 flex items-center justify-center shrink-0 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition">
+                <app-icono nombre="file-text" clase="w-5 h-5" />
+              </span>
+              <span class="min-w-0 space-y-1">
+                <span class="flex flex-wrap items-center gap-2">
+                  <span class="font-semibold text-slate-900 dark:text-white truncate">{{ documento.title }}</span>
+                  <app-insignia-prioridad [prioridad]="documento.priority" />
+                </span>
+                <span class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 min-w-0">
+                  <app-icono nombre="folder" clase="w-3.5 h-3.5 text-slate-400" />
+                  <span class="truncate">{{ store.rutaDe(documento.folderId).join(' / ') }}</span>
+                </span>
+                <span class="block text-xs text-slate-400 dark:text-slate-500 truncate">{{ vistaPrevia(documento.content) || 'Sin contenido' }}</span>
+              </span>
+            </div>
+            <span class="flex items-center gap-3 shrink-0 text-xs text-slate-500 dark:text-slate-400 self-end sm:self-auto">
+              <span class="flex items-center gap-1" [title]="'Editado el ' + (documento.updatedOn | fechaHora)">
+                <app-icono nombre="clock" clase="w-3.5 h-3.5" />
+                {{ documento.updatedOn | fechaRelativa }}
+              </span>
+              <span class="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-semibold">
+                Abrir <app-icono nombre="arrow-right" clase="w-3.5 h-3.5" />
+              </span>
+            </span>
+          </button>
+        } @empty {
+          <div class="flex flex-col items-center justify-center text-center py-10 px-4">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900 text-indigo-500 flex items-center justify-center mb-3">
+              <app-icono nombre="file-question" clase="w-7 h-7" />
+            </div>
+            <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">Todavía no hay documentos</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 mb-4">Crea una carpeta y tu primera nota; aparecerá aquí apenas la publiques.</p>
+            <button type="button" (click)="store.nuevoDocumento()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium shadow-sm transition">
+              <app-icono nombre="plus" /> Crear nueva nota
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Carpetas principales -->
+    @if (store.arbol().length > 0) {
+      <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 sm:p-6">
+        <h2 class="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+          <app-icono nombre="folder-tree" class="text-indigo-600 dark:text-indigo-400" />
+          Carpetas principales
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          @for (nodo of store.arbol(); track nodo.carpeta.id) {
+            <button type="button" (click)="store.abrirCarpeta(nodo.carpeta.id)" class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/30 transition flex items-center justify-between gap-3 text-left">
+              <span class="flex items-center gap-2.5 min-w-0">
+                <app-icono nombre="folder" clase="w-5 h-5 text-indigo-500" />
+                <span class="font-medium text-sm text-slate-800 dark:text-slate-100 truncate">{{ nodo.carpeta.name }}</span>
+              </span>
+              <span class="text-[11px] text-slate-500 dark:text-slate-400 shrink-0">{{ nodo.hijos.length }} sub · {{ nodo.documentos.length }} docs</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</section>

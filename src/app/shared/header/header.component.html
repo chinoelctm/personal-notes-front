@@ -1,0 +1,53 @@
+<header class="h-14 shrink-0 z-30 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between gap-2 px-2 sm:px-4">
+  <div class="flex items-center gap-1 sm:gap-3 shrink-0">
+    <!-- Hamburguesa: solo en teléfonos, abre el explorador -->
+    <button type="button" (click)="store.alternarSidebar()" class="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            [attr.aria-expanded]="store.sidebarAbierto()" aria-controls="explorador" aria-label="Abrir o cerrar el explorador de carpetas">
+      <app-icono [nombre]="store.sidebarAbierto() ? 'x' : 'menu'" clase="w-6 h-6" />
+    </button>
+    <button type="button" (click)="store.irAInicio()" class="flex items-center gap-2 rounded-lg" title="Ir al inicio">
+      <span class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-500/30">
+        <app-icono nombre="folder-tree" clase="w-5 h-5" />
+      </span>
+      <span class="hidden lg:inline font-bold text-slate-800 dark:text-white tracking-tight text-lg">Notas<span class="text-indigo-600 dark:text-indigo-400">IDE</span></span>
+    </button>
+  </div>
+
+  <!-- Buscador global: títulos y contenido de todas las notas -->
+  <div class="flex-1 min-w-0 max-w-md">
+    <div class="relative flex items-center">
+      <app-icono nombre="search" clase="w-4 h-4" class="absolute left-3 text-slate-400 pointer-events-none" />
+      <input #buscador type="text" role="searchbox" enterkeyhint="search" [value]="store.consulta()" (input)="buscar(buscador.value)" (keydown.escape)="store.cerrarBusqueda()"
+             placeholder="Buscar en títulos y contenido…" aria-label="Buscar notas por título o contenido"
+             class="w-full bg-slate-100 dark:bg-slate-700/70 hover:bg-slate-200/70 dark:hover:bg-slate-700 focus:bg-white dark:focus:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm rounded-lg pl-9 pr-9 py-2 border border-transparent focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-900 outline-none transition placeholder:text-slate-400">
+      @if (store.consulta()) {
+        <button type="button" (click)="store.cerrarBusqueda()" class="absolute right-1 flex items-center justify-center w-8 h-8 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200" title="Limpiar búsqueda">
+          <app-icono nombre="x" />
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+    <button type="button" (click)="asistente.abrir()" class="flex items-center justify-center gap-1.5 h-10 px-2.5 sm:px-3 rounded-lg text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/80 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors" title="Abrir asistente de IA (Gemini)">
+      <app-icono nombre="sparkles" class="text-indigo-600 dark:text-indigo-400" />
+      <span class="hidden xl:inline">Asistente IA</span>
+    </button>
+
+    <!-- Estado de sincronización -->
+    <div class="hidden sm:flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-md border" [class]="estado().clase" [title]="estado().detalle" role="status">
+      <span class="w-2 h-2 rounded-full" [class]="estado().punto"></span>
+      <span class="hidden md:inline">{{ estado().texto }}</span>
+    </div>
+
+    <button type="button" (click)="store.exportarRespaldo()" class="flex items-center justify-center gap-1.5 h-10 px-2.5 sm:px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Exportar respaldo (.json)">
+      <app-icono nombre="download" class="text-indigo-600 dark:text-indigo-400" />
+      <span class="hidden lg:inline">Exportar Respaldo</span>
+    </button>
+    <label for="importar-respaldo" class="flex items-center justify-center gap-1.5 h-10 px-2.5 sm:px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors cursor-pointer" title="Importar respaldo (.json)">
+      <app-icono nombre="upload" class="text-indigo-600 dark:text-indigo-400" />
+      <span class="hidden lg:inline">Importar Respaldo</span>
+    </label>
+    <input #archivo id="importar-respaldo" type="file" accept=".json,application/json" class="hidden" (change)="importar(archivo)">
+  </div>
+</header>

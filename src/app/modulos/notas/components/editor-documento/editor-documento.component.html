@@ -1,0 +1,140 @@
+@if (store.borrador(); as borrador) {
+  <section class="flex-1 min-h-0 flex flex-col bg-white dark:bg-slate-800" aria-label="Editor de documento">
+    <!-- Barra superior: en el teléfono se apila (ubicación arriba, acciones abajo) -->
+    <div class="border-b border-slate-200 dark:border-slate-700 px-3 sm:px-6 py-2.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 shrink-0">
+      <div class="flex items-center gap-2 min-w-0">
+        <button type="button" (click)="store.volverDesdeEditor()" class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-white transition shrink-0" title="Volver al directorio">
+          <app-icono nombre="arrow-left" clase="w-5 h-5" />
+        </button>
+        <div class="min-w-0">
+          <div class="text-xs text-slate-500 dark:text-slate-400 font-medium truncate flex items-center gap-1">
+            <app-icono nombre="folder" clase="w-3.5 h-3.5" />
+            <span class="truncate">{{ store.rutaDe(borrador.folderId).join(' / ') }}</span>
+          </div>
+          <div class="text-[11px] text-slate-400" role="status">
+            @if (store.documentoActivo(); as publicado) {
+              Publicado {{ publicado.updatedOn | fechaRelativa | lowercase }}
+            } @else {
+              Documento nuevo, sin publicar
+            }
+            @if (store.hayCambiosSinPublicar()) {
+              · <span class="text-amber-600 dark:text-amber-400 font-medium">cambios guardados localmente</span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0 flex-wrap">
+        <!-- Banderita de prioridad -->
+        <div class="relative">
+          <button type="button" (click)="menuPrioridadAbierto = !menuPrioridadAbierto" class="flex items-center gap-1.5 px-2.5 sm:px-3 h-10 border border-slate-200 dark:border-slate-600 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                  aria-haspopup="menu" [attr.aria-expanded]="menuPrioridadAbierto" title="Asignar prioridad">
+            <span class="w-2.5 h-2.5 rounded-full" [class]="prioridades[borrador.priority].punto"></span>
+            <span>{{ prioridades[borrador.priority].etiqueta }}</span>
+            <app-icono nombre="chevron-down" clase="w-3.5 h-3.5 text-slate-400" />
+          </button>
+          @if (menuPrioridadAbierto) {
+            <div class="fixed inset-0 z-40" (click)="menuPrioridadAbierto = false" aria-hidden="true"></div>
+            <div class="absolute right-0 sm:right-0 left-0 sm:left-auto mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-lg py-1.5 z-50 text-xs fade-enter" role="menu">
+              @for (prioridad of ordenPrioridades; track prioridad) {
+                <button type="button" role="menuitemradio" [attr.aria-checked]="borrador.priority === prioridad" (click)="cambiarPrioridad(prioridad)"
+                        class="flex items-center gap-2 w-full px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200">
+                  <span class="w-2.5 h-2.5 rounded-full" [class]="prioridades[prioridad].punto"></span>
+                  <span class="flex-1 text-left">{{ prioridades[prioridad].etiqueta }}</span>
+                  @if (borrador.priority === prioridad) {
+                    <app-icono nombre="check" clase="w-3.5 h-3.5 text-indigo-600" />
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <button type="button" (click)="preguntarIa()" class="flex items-center gap-1.5 h-10 px-3 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-lg text-xs font-semibold transition" title="Preguntar a la IA con este documento como contexto">
+          <app-icono nombre="sparkles" class="text-indigo-600 dark:text-indigo-400" />
+          <span class="hidden md:inline">Preguntar sobre este documento</span>
+          <span class="md:hidden">IA</span>
+        </button>
+
+        @if (store.hayCambiosSinPublicar() && store.documentoActivo()) {
+          <button type="button" (click)="store.descartarCambios()" class="flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition" title="Descartar cambios locales">
+            <app-icono nombre="undo" />
+          </button>
+        }
+        @if (store.documentoActivo(); as publicado) {
+          <button type="button" (click)="store.eliminarDocumento(publicado)" class="flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition" title="Eliminar documento">
+            <app-icono nombre="trash" />
+          </button>
+        }
+
+        <button type="button" (click)="store.publicar()" [disabled]="store.publicando()" class="flex items-center gap-2 h-10 px-4 sm:px-5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-60 text-white font-semibold rounded-lg text-sm shadow-sm transition" title="Publicar (Ctrl+S)">
+          <app-icono [nombre]="store.publicando() ? 'refresh-cw' : 'check'" [clase]="store.publicando() ? 'w-4 h-4 animate-spin' : 'w-4 h-4'" />
+          <span>{{ store.publicando() ? 'Publicando…' : 'Publicar' }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Herramientas de edición (desplazables en el teléfono) -->
+    <div class="border-b border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/40 px-2 sm:px-6 py-1.5 flex items-center gap-1 overflow-x-auto shrink-0" role="toolbar" aria-label="Formato del documento">
+      @for (herramienta of herramientasTexto; track herramienta.titulo) {
+        <button type="button" (mousedown)="$event.preventDefault()" (click)="comando(herramienta.comando, herramienta.valor)" class="p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition shrink-0" [title]="herramienta.titulo">
+          @if (herramienta.icono) {
+            <app-icono [nombre]="herramienta.icono" />
+          } @else {
+            <span class="text-xs font-bold px-0.5">{{ herramienta.texto }}</span>
+          }
+        </button>
+        @if (herramienta.separador) {
+          <span class="w-px h-5 bg-slate-300 dark:bg-slate-600 mx-1 shrink-0"></span>
+        }
+      }
+      <button type="button" (mousedown)="$event.preventDefault()" (click)="insertarTabla()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition shrink-0" title="Insertar tabla">
+        <app-icono nombre="table" /><span class="hidden sm:inline">Tabla</span>
+      </button>
+      <button type="button" (mousedown)="$event.preventDefault()" (click)="agregarFila()" class="p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition shrink-0" title="Agregar fila a la tabla donde está el cursor">
+        <app-icono nombre="fila-mas" />
+      </button>
+      <button type="button" (mousedown)="$event.preventDefault()" (click)="agregarColumna()" class="p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition shrink-0" title="Agregar columna a la tabla donde está el cursor">
+        <app-icono nombre="columna-mas" />
+      </button>
+      <button type="button" (mousedown)="$event.preventDefault()" (click)="insertarCodigo()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition shrink-0" title="Insertar bloque de código">
+        <app-icono nombre="code-xml" /><span class="hidden sm:inline">Código</span>
+      </button>
+      <label for="imagen-nota" (mousedown)="guardarSeleccion()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition cursor-pointer shrink-0" title="Adjuntar imagen (se incrusta en Base64)">
+        <app-icono nombre="image" /><span class="hidden sm:inline">Imagen</span>
+      </label>
+      <input #selectorImagen id="imagen-nota" type="file" accept="image/*" multiple class="hidden" (change)="adjuntarDesdeSelector(selectorImagen)">
+    </div>
+
+    <!-- Hoja central -->
+    <div class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 p-3 sm:p-6 md:p-8 flex justify-center">
+      <div class="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 sm:p-8 md:p-12 min-h-full flex flex-col"
+           (dragover)="alArrastrar($event)" (dragleave)="arrastrando = false" (drop)="alSoltar($event)">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3 text-xs text-slate-500 dark:text-slate-400">
+          <label for="carpeta-documento" class="font-medium shrink-0">Ubicación:</label>
+          <select id="carpeta-documento" [value]="borrador.folderId" (change)="moverA($event)"
+                  class="min-w-0 sm:max-w-sm text-xs py-1.5 pl-2 pr-8 rounded-lg border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:ring-indigo-200">
+            @for (carpeta of carpetasOrdenadas(); track carpeta.id) {
+              <option [value]="carpeta.id" [selected]="carpeta.id === borrador.folderId">{{ carpeta.path.join(' / ') }}</option>
+            }
+          </select>
+        </div>
+
+        <input type="text" [value]="borrador.title" (input)="cambiarTitulo($event)" (keydown.enter)="enfocarCuerpo($event)" maxlength="200"
+               placeholder="Título del documento…" aria-label="Título del documento"
+               class="w-full text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white bg-transparent border-0 border-b border-transparent hover:border-slate-200 dark:hover:border-slate-600 focus:border-indigo-500 focus:ring-0 px-0 pb-2 mb-4 outline-none transition placeholder:text-slate-300 dark:placeholder:text-slate-600">
+
+        @if (arrastrando) {
+          <div class="border-2 border-dashed border-indigo-400 bg-indigo-50/60 dark:bg-indigo-950/40 rounded-xl p-4 text-center text-sm font-medium text-indigo-700 dark:text-indigo-300 mb-4 flex items-center justify-center gap-2 pointer-events-none">
+            <app-icono nombre="image-plus" clase="w-5 h-5" />
+            <span>Suelta la imagen para adjuntarla como Base64</span>
+          </div>
+        }
+
+        <div #cuerpo class="contenido-nota flex-1 outline-none min-h-[350px]" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Contenido del documento"
+             data-placeholder="Escribe aquí… Puedes pegar o arrastrar imágenes, insertar tablas y bloques de código."
+             (input)="alEscribir()" (paste)="alPegar($event)" (keydown)="alPresionarTecla($event)"></div>
+      </div>
+    </div>
+  </section>
+}
