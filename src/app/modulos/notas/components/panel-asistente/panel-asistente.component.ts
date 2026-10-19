@@ -37,6 +37,12 @@ export class PanelAsistenteComponent {
     if (borrador) this.asistente.preguntarSobreDocumento(borrador);
   }
 
+  // En el teléfono el panel tapa todo: se cierra para mostrar el documento
+  protected abrirFuente(id: string) {
+    this.store.abrirDocumento(id);
+    if (window.matchMedia('(max-width: 639px)').matches) this.asistente.cerrar();
+  }
+
   protected async enviar(texto: string) {
     if (!texto.trim()) return;
     this.pregunta = '';

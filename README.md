@@ -41,6 +41,8 @@ La API debe tener el origen del front en `Cors:AllowedOrigins`.
   mayúsculas ni tildes, resalta las coincidencias y muestra la ruta de la carpeta de origen.
 - **Asistente IA (Google Gemini)**: panel lateral colapsable que consulta `POST /api/v1/assistant/ask`. La
   integración con Gemini y su API Key viven en el backend (`Gemini:ApiKey`): la clave nunca llega al navegador.
+  Con **"Buscar en todas mis notas"** (activado por defecto) la IA conoce todos tus documentos: responde
+  preguntas sobre ellos y muestra las **fuentes** (los documentos usados), que se abren con un clic.
   **"Preguntar sobre este documento"** adjunta automáticamente el texto del documento activo (aunque sea un
   borrador sin publicar) como contexto de cada pregunta; mientras responde se muestra "Pensando...". Si el
   servidor no tiene clave, el panel lo indica (`GET /api/v1/assistant/status`).

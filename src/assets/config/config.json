@@ -5,6 +5,7 @@
   "TamanoMaximoImagenMb": 2,
   "LargoMaximoContextoIa": 30000,
   "SugerenciasIa": [
+    { "etiqueta": "📚 ¿Qué notas tengo?", "prompt": "¿Qué documentos tengo guardados y de qué trata cada uno?" },
     { "etiqueta": "📌 Resumir", "prompt": "Resume este documento en 3 puntos clave." },
     { "etiqueta": "✅ Tareas", "prompt": "Extrae las tareas pendientes o elementos de acción." },
     { "etiqueta": "✨ Mejorar texto", "prompt": "Mejora la redacción y corrige la ortografía." }

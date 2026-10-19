@@ -42,6 +42,15 @@
     </div>
   </div>
 
+  <!-- Alcance de la búsqueda -->
+  <label class="px-3 py-2 border-b border-slate-100 dark:border-slate-700 flex items-center gap-2 text-xs text-slate-700 dark:text-slate-200 cursor-pointer">
+    <input type="checkbox" [checked]="asistente.buscarEnNotas()" (change)="asistente.buscarEnNotas.set($any($event.target).checked)"
+           class="w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500">
+    <app-icono nombre="search" clase="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+    <span>Buscar en todas mis notas</span>
+    <span class="ml-auto text-[10px] text-slate-400">{{ store.documentos().length }} documento(s)</span>
+  </label>
+
   <!-- Sugerencias -->
   <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40 flex items-center gap-1.5 overflow-x-auto text-xs">
     <span class="text-slate-400 text-[11px] shrink-0">Sugerencias:</span>
@@ -57,7 +66,7 @@
         <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><app-icono nombre="bot" /></div>
         <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl p-3 text-slate-700 dark:text-slate-200 leading-relaxed shadow-sm max-w-[85%]">
           <p class="font-semibold text-slate-900 dark:text-white mb-1">¡Hola! Soy tu asistente de notas.</p>
-          <p>Puedo redactar, resumir, revisar código o responder preguntas sobre el documento que estés editando.</p>
+          <p>Conozco tus documentos: pregúntame por cualquier dato de tus notas (por ejemplo "¿cuándo vence el contrato?") y te digo de qué documento lo saqué. También puedo resumir, redactar o revisar el documento que tengas abierto.</p>
           @if (!asistente.disponible()) {
             <p class="mt-2 text-[11px] text-amber-600 dark:text-amber-400">El asistente aún no está configurado en el servidor: falta la API Key de Gemini (<code class="font-mono">Gemini:ApiKey</code>).</p>
           }
@@ -75,7 +84,21 @@
         @case ('asistente') {
           <div class="flex gap-2.5">
             <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><app-icono nombre="bot" /></div>
-            <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl rounded-tl-md p-3 text-slate-700 dark:text-slate-200 leading-relaxed shadow-sm max-w-[85%] whitespace-pre-wrap break-words">{{ mensaje.texto }}</div>
+            <div class="max-w-[85%] min-w-0 space-y-1.5">
+              <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl rounded-tl-md p-3 text-slate-700 dark:text-slate-200 leading-relaxed shadow-sm whitespace-pre-wrap break-words">{{ mensaje.texto }}</div>
+              @if (mensaje.fuentes?.length) {
+                <div class="flex flex-wrap items-center gap-1 text-[11px]" aria-label="Fuentes de la respuesta">
+                  <span class="text-slate-400">Fuentes:</span>
+                  @for (fuente of mensaje.fuentes; track fuente.id) {
+                    <button type="button" (click)="abrirFuente(fuente.id)" [title]="fuente.ruta + ' / ' + fuente.titulo"
+                            class="inline-flex items-center gap-1 max-w-full px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900 hover:bg-indigo-100 dark:hover:bg-indigo-900/60">
+                      <app-icono nombre="file-text" clase="w-3 h-3" />
+                      <span class="truncate">{{ fuente.titulo }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
           </div>
         }
         @case ('error') {
