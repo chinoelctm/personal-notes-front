@@ -13,6 +13,7 @@ import { Priority } from '../../../../core/interfaces/responses/DocumentResponse
 import { FechaRelativaPipe } from '../../../../core/pipes/fecha-relativa.pipe';
 import { IconoComponent } from '../../../../shared/icono/icono.component';
 import { NombreIcono } from '../../../../shared/icono/iconos';
+import { EditorHtmlComponent } from '../editor-html/editor-html.component';
 
 interface HerramientaTexto {
   titulo:     string;
@@ -46,7 +47,7 @@ const TABLA_INICIAL =
 @Component({
   selector: 'app-editor-documento',
   standalone: true,
-  imports: [LowerCasePipe, FechaRelativaPipe, IconoComponent],
+  imports: [LowerCasePipe, FechaRelativaPipe, IconoComponent, EditorHtmlComponent],
   templateUrl: './editor-documento.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'flex flex-1 flex-col min-h-0' }

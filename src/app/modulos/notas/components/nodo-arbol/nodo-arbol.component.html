@@ -42,6 +42,9 @@
     <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
       <app-icono nombre="file-plus" /> Documento
     </button>
+    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id, 'Html')" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
+      <app-icono nombre="code-xml" /> Página HTML
+    </button>
     @if (puedeTenerSubcarpetas) {
       <button type="button" (click)="accionesAbiertas = false; store.abrirModalNuevaCarpeta(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
         <app-icono nombre="folder-plus" /> Subcarpeta
@@ -67,7 +70,7 @@
            [class]="documento.id === documentoActivoId ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-600/25 dark:text-white' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800/40'"
            [style.padding-left.px]="sangria + 24">
         <button type="button" (click)="store.abrirDocumento(documento.id)" class="flex-1 min-w-0 flex items-center gap-1.5 py-1.5 text-left" [title]="documento.title">
-          <app-icono nombre="file-text" clase="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500" />
+          <app-icono [nombre]="documento.type === 'Html' ? 'code-xml' : 'file-text'" clase="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500" />
           <span class="truncate">{{ documento.title }}</span>
           @if (documento.priority !== 'None') {
             <span class="w-2 h-2 rounded-full shrink-0 ml-1" [class]="prioridades[documento.priority].punto" [title]="'Prioridad ' + prioridades[documento.priority].etiqueta"></span>

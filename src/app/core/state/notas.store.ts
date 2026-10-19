@@ -12,7 +12,7 @@ import { ArbolService } from '../utils/arbol.service';
 import { AlmacenamientoLocalService, CLAVES_LOCALES } from '../utils/almacenamiento-local.service';
 import { mensajeDeError } from '../utils/api-error';
 import { FolderResponse } from '../interfaces/responses/FolderResponse';
-import { DocumentResponse } from '../interfaces/responses/DocumentResponse';
+import { DocumentResponse, DocumentType } from '../interfaces/responses/DocumentResponse';
 import { DashboardResponse } from '../interfaces/responses/DashboardResponse';
 import { DocumentRequest } from '../interfaces/requests/DocumentRequest';
 import {
@@ -213,7 +213,7 @@ export class NotasStore {
   }
 
   /** Documento nuevo en la carpeta indicada, la seleccionada o la primera raíz (si no hay, crea "General"). */
-  async nuevoDocumento(folderId?: string | null) {
+  async nuevoDocumento(folderId?: string | null, tipo: DocumentType = 'Rich') {
     let destino = folderId ?? this.carpetaSeleccionadaId() ?? this.arbol()[0]?.carpeta.id ?? null;
     if (!destino) {
       const resp = await this.ejecutar(() =>
@@ -225,7 +225,7 @@ export class NotasStore {
 
     this.limpiarBusquedaSinNavegar();
     const borrador: Borrador = {
-      documentoId: null, folderId: destino, title: '', content: '', priority: 'None', baseUpdatedOn: null
+      documentoId: null, folderId: destino, title: '', content: '', priority: 'None', type: tipo, baseUpdatedOn: null
     };
     this.mostrarEnEditor(borrador);
   }
@@ -304,7 +304,8 @@ export class NotasStore {
       folderId: borrador.folderId,
       title: borrador.title.trim(),
       content: borrador.content,
-      priority: borrador.priority
+      priority: borrador.priority,
+      type: borrador.type ?? 'Rich'
     };
 
     this.publicando.set(true);
@@ -507,6 +508,7 @@ export class NotasStore {
       title: documento.title,
       content: documento.content,
       priority: documento.priority,
+      type: documento.type ?? 'Rich',
       baseUpdatedOn: documento.updatedOn
     };
   }
@@ -571,7 +573,10 @@ export class NotasStore {
   }
 
   private guardarCache() {
-    const cache: CacheLocal = { carpetas: this.carpetas(), documentos: this.documentos(), resumen: this.resumen() };
+    // Los documentos muy pesados (páginas HTML con datos, imágenes) no caben en localStorage: se omiten de la
+    // copia local y llegan igual desde la API. Nunca se guardan vacíos, para no publicar un contenido perdido
+    const documentos = this.documentos().filter(d => d.content.length <= config.LargoMaximoDocumentoEnCache);
+    const cache: CacheLocal = { carpetas: this.carpetas(), documentos, resumen: this.resumen() };
     this.escribirLocal(CLAVES_LOCALES.cache, cache);
   }
 

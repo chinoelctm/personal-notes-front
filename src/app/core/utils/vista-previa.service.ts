@@ -27,6 +27,8 @@ export class VistaPreviaService {
     const conEspacios = html.replace(CIERRE_DE_BLOQUE, ' ');
     // DOMParser no ejecuta scripts ni descarga imágenes: es seguro para extraer el texto
     const documento = new DOMParser().parseFromString(conEspacios, 'text/html');
+    // Código y estilos de las páginas HTML no son texto visible
+    documento.querySelectorAll('script, style, noscript, template').forEach(n => n.remove());
     return (documento.body.textContent ?? '').replace(/\s+/g, ' ').trim();
   }
 

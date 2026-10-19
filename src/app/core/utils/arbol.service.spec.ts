@@ -10,7 +10,7 @@ function carpeta(id: string, name: string, parentFolderId: string | null, path: 
 }
 
 function documento(id: string, folderId: string, updatedOn: string): DocumentResponse {
-  return { id, folderId, title: id, content: '', priority: 'None', createdOn: updatedOn, updatedOn };
+  return { id, folderId, title: id, content: '', priority: 'None', type: 'Rich', createdOn: updatedOn, updatedOn };
 }
 
 describe('ArbolService', () => {

@@ -1,4 +1,4 @@
-import { Priority } from '../responses/DocumentResponse';
+import { DocumentType, Priority } from '../responses/DocumentResponse';
 
 export interface DocumentRequest {
     folderId: string;
@@ -6,4 +6,5 @@ export interface DocumentRequest {
     title:    string;
     content:  string;
     priority: Priority;
+    type:     DocumentType;
 }

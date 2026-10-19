@@ -2,7 +2,7 @@ import { VistaPreviaService } from './vista-previa.service';
 import { DocumentResponse, Priority } from '../interfaces/responses/DocumentResponse';
 
 function documento(id: string, title: string, content: string, updatedOn: string, priority: Priority = 'None'): DocumentResponse {
-  return { id, folderId: 'f1', title, content, priority, createdOn: updatedOn, updatedOn };
+  return { id, folderId: 'f1', title, content, priority, type: 'Rich', createdOn: updatedOn, updatedOn };
 }
 
 describe('VistaPreviaService', () => {
@@ -12,6 +12,11 @@ describe('VistaPreviaService', () => {
     const html = '<h2>Entregables</h2><p>Revisión &amp; pruebas</p><img src="data:image/png;base64,AAAA"><ul><li>Uno</li><li>Dos</li></ul>';
     expect(service.textoPlano(html)).toBe('Entregables Revisión & pruebas Uno Dos');
     expect(service.textoPlano('')).toBe('');
+  });
+
+  it('ignora scripts y estilos de las páginas HTML', () => {
+    const html = '<style>body{color:red}</style><h1>Cruce</h1><script>const DATOS=[1,2,3];</script><p>Destinos</p>';
+    expect(service.textoPlano(html)).toBe('Cruce Destinos');
   });
 
   it('recorta la vista previa en una palabra completa', () => {

@@ -3,7 +3,14 @@
     <span class="flex items-start justify-between gap-2 pr-8">
       <span class="font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2">{{ documento.title }}</span>
     </span>
-    <app-insignia-prioridad [prioridad]="documento.priority" [mostrarNinguna]="true" />
+    <span class="flex flex-wrap items-center gap-1.5">
+      <app-insignia-prioridad [prioridad]="documento.priority" [mostrarNinguna]="true" />
+      @if (documento.type === 'Html') {
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800">
+          <app-icono nombre="code-xml" clase="w-3 h-3" /> HTML
+        </span>
+      }
+    </span>
     <span class="flex-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">{{ vistaPrevia || 'Sin contenido todavía.' }}</span>
     <span class="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 pt-2 mt-1 border-t border-slate-100 dark:border-slate-700 text-[11px] text-slate-400 dark:text-slate-500">
       <span [title]="'Creado el ' + (documento.createdOn | fechaHora)">Creado {{ documento.createdOn | fechaHora }}</span>

@@ -46,6 +46,13 @@ La API debe tener el origen del front en `Cors:AllowedOrigins`.
   **"Preguntar sobre este documento"** adjunta automáticamente el texto del documento activo (aunque sea un
   borrador sin publicar) como contexto de cada pregunta; mientras responde se muestra "Pensando...". Si el
   servidor no tiene clave, el panel lo indica (`GET /api/v1/assistant/status`).
+- **Páginas HTML**: además de notas, una carpeta puede tener páginas HTML propias (botón *Página HTML* en el
+  directorio, el ícono `</>` del explorador o el menú "⋯"). El editor muestra el código, la vista previa o ambos
+  (dividido, en pantallas anchas); *Cargar .html* (o arrastrar el archivo) llena el código y toma el `<title>` como
+  título. La vista previa es un iframe con `sandbox="allow-scripts"` y **sin** `allow-same-origin`: el JavaScript de
+  la página corre, pero en un origen aislado que no puede leer las notas, el `localStorage` ni llamar a la API.
+  Las páginas de más de 300.000 caracteres no se guardan en la copia local (no caben en `localStorage`); llegan
+  siempre desde la API. Límite de archivo: 10 MB (`TamanoMaximoHtmlMb` en `config.json`).
 - **Eliminar**: borrar un documento o una carpeta es **permanente** (la API hace borrado físico; una carpeta
   se lleva sus subcarpetas y documentos). Antes, un popup pide confirmación y detalla qué se va a borrar.
 - **Respaldos**: *Exportar Respaldo* descarga un `.json` con todas las carpetas y documentos;

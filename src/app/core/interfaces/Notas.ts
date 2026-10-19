@@ -1,4 +1,4 @@
-import { DocumentResponse, Priority } from './responses/DocumentResponse';
+import { DocumentResponse, DocumentType, Priority } from './responses/DocumentResponse';
 import { FolderResponse } from './responses/FolderResponse';
 
 export type VistaCentral = 'inicio' | 'directorio' | 'editor' | 'busqueda';
@@ -25,6 +25,7 @@ export interface Borrador {
     title:         string;
     content:       string;
     priority:      Priority;
+    type:          DocumentType;
     baseUpdatedOn: string | null;
 }
 
