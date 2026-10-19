@@ -110,8 +110,8 @@
     </div>
 
     <!-- Hoja central -->
-    <div class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 p-3 sm:p-6 md:p-8 flex justify-center items-start">
-      <div class="w-full max-w-4xl bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 sm:p-8 md:p-12 min-h-full flex flex-col"
+    <div class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 p-3 sm:p-6 md:p-8">
+      <div class="mx-auto w-full max-w-4xl bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 sm:p-8 md:p-12 min-h-full flex flex-col"
            (dragover)="alArrastrar($event)" (dragleave)="arrastrando = false" (drop)="alSoltar($event)">
         <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3 text-xs text-slate-500 dark:text-slate-400">
           <label for="carpeta-documento" class="font-medium shrink-0">Ubicación:</label>
@@ -134,7 +134,7 @@
           </div>
         }
 
-        <div #cuerpo class="contenido-nota flex-1 outline-none min-h-[350px]" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Contenido del documento"
+        <div #cuerpo class="contenido-nota grow shrink-0 outline-none min-h-[350px]" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Contenido del documento"
              data-placeholder="Escribe aquí… Puedes pegar o arrastrar imágenes, insertar tablas y bloques de código."
              (input)="alEscribir()" (paste)="alPegar($event)" (keydown)="alPresionarTecla($event)"></div>
       </div>
