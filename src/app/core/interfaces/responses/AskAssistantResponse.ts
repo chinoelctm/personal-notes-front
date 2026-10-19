@@ -1,5 +1,5 @@
 export interface AskAssistantResponse {
     answer: string;
-    // Modelo que respondió (ej. gemini-2.5-flash)
+    // Modelo que respondió (ej. gemini-3.8-flash)
     model:  string;
 }

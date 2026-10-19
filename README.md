@@ -20,7 +20,7 @@ La URL de la API depende del entorno (`fileReplacements` en `angular.json`):
 | Archivo | Se usa en | URL |
 |---|---|---|
 | `src/environments/environment.development.ts` | `npm start` / `ng serve` | `http://localhost:5080/` |
-| `src/environments/environment.ts` | `npm run build` (producción) | `https://personal-notes-service.onrender.com/` |
+| `src/environments/environment.ts` | `npm run build` (producción) | `https://personal-notes-service-hgni.onrender.com/` |
 
 La API debe tener el origen del front en `Cors:AllowedOrigins`.
 
@@ -100,5 +100,5 @@ El repo incluye `render.yaml`: en Render, **New → Blueprint** y elegir este re
 que compila con `npm ci && npm run build`, publica `dist/personal-notes/browser` (con `NODE_VERSION=20`)
 y redirige todas las rutas a `index.html`.
 
-Si Render asigna a la API una URL distinta de `personal-notes-service.onrender.com` (por ejemplo, porque
+Si Render asigna a la API una URL distinta de `personal-notes-service-hgni.onrender.com` (por ejemplo, porque
 el nombre ya estaba tomado), actualiza `src/environments/environment.ts` y haz push.
