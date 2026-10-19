@@ -30,7 +30,7 @@ export class DocumentsService {
     return lastValueFrom(this._http.put<DocumentSavedResponse>(`${apiUrl}/documents/${encodeURIComponent(id)}`, request));
   }
 
-  // La API lo desactiva (borrado lógico)
+  // Borrado físico: el documento se elimina de forma permanente
   async eliminarDocumento(id: string): Promise<void> {
     await lastValueFrom(this._http.delete<void>(`${apiUrl}/documents/${encodeURIComponent(id)}`));
   }

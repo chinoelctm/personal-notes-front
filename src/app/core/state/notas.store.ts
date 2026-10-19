@@ -349,11 +349,11 @@ export class NotasStore {
 
   async eliminarDocumento(documento: DocumentResponse) {
     const respuesta = await this._confirmService.preguntar({
-      titulo: 'Eliminar documento',
-      mensaje: `"${documento.title}" dejará de aparecer en el árbol, el buscador y el inicio.`,
+      titulo: '¿Eliminar este documento?',
+      mensaje: `Se eliminará "${documento.title}" de forma permanente.\nEsta acción no se puede deshacer.`,
       opciones: [
         { etiqueta: 'Cancelar', valor: 'no', estilo: 'secundario' },
-        { etiqueta: 'Eliminar', valor: 'si', estilo: 'peligro' }
+        { etiqueta: 'Sí, eliminar', valor: 'si', estilo: 'peligro' }
       ]
     });
     if (respuesta !== 'si') return;
@@ -406,15 +406,20 @@ export class NotasStore {
 
   async eliminarCarpeta(carpeta: FolderResponse) {
     const subarbol = this._arbolService.subarbol(this.carpetas(), carpeta.id);
-    const documentos = this.documentos().filter(d => subarbol.has(d.folderId)).length;
-    const subcarpetas = subarbol.size - 1;
+    const idsDocumentos = this.documentos().filter(d => subarbol.has(d.folderId)).map(d => d.id);
+    const contenido = [
+      subarbol.size > 1 ? `${subarbol.size - 1} subcarpeta(s)` : '',
+      idsDocumentos.length > 0 ? `${idsDocumentos.length} documento(s)` : ''
+    ].filter(Boolean).join(' y ');
 
     const respuesta = await this._confirmService.preguntar({
-      titulo: `Eliminar "${carpeta.name}"`,
-      mensaje: `Se eliminarán ${subcarpetas} subcarpeta(s) y ${documentos} documento(s) que contiene.`,
+      titulo: `¿Eliminar la carpeta "${carpeta.name}"?`,
+      mensaje: (contenido
+        ? `Se eliminarán de forma permanente la carpeta y todo su contenido: ${contenido}.`
+        : 'Se eliminará la carpeta de forma permanente (está vacía).') + '\nEsta acción no se puede deshacer.',
       opciones: [
         { etiqueta: 'Cancelar', valor: 'no', estilo: 'secundario' },
-        { etiqueta: 'Eliminar carpeta', valor: 'si', estilo: 'peligro' }
+        { etiqueta: 'Sí, eliminar carpeta', valor: 'si', estilo: 'peligro' }
       ]
     });
     if (respuesta !== 'si') return;
@@ -422,6 +427,8 @@ export class NotasStore {
     const resp = await this.ejecutar(() => this._foldersService.eliminarCarpeta(carpeta.id));
     if (!resp) return;
 
+    // Los borradores locales de documentos que ya no existen tampoco sirven
+    idsDocumentos.forEach(id => this.eliminarBorrador(id));
     await this.cargarTodo();
     const seleccionada = this.carpetaSeleccionadaId();
     const borradorEnCarpeta = this.borrador() && subarbol.has(this.borrador()!.folderId);

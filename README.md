@@ -46,6 +46,8 @@ La API debe tener el origen del front en `Cors:AllowedOrigins`.
   **"Preguntar sobre este documento"** adjunta automáticamente el texto del documento activo (aunque sea un
   borrador sin publicar) como contexto de cada pregunta; mientras responde se muestra "Pensando...". Si el
   servidor no tiene clave, el panel lo indica (`GET /api/v1/assistant/status`).
+- **Eliminar**: borrar un documento o una carpeta es **permanente** (la API hace borrado físico; una carpeta
+  se lleva sus subcarpetas y documentos). Antes, un popup pide confirmación y detalla qué se va a borrar.
 - **Respaldos**: *Exportar Respaldo* descarga un `.json` con todas las carpetas y documentos;
   *Importar Respaldo* lo sube a la API (que reemplaza todo) y vuelve a poblar la copia en `localStorage`.
 

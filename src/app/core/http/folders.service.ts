@@ -27,7 +27,7 @@ export class FoldersService {
     await lastValueFrom(this._http.put<void>(`${apiUrl}/folders/${encodeURIComponent(id)}`, request));
   }
 
-  // La API desactiva la carpeta, sus subcarpetas y sus documentos
+  // Borrado físico en cascada: la carpeta, sus subcarpetas y sus documentos
   async eliminarCarpeta(id: string): Promise<void> {
     await lastValueFrom(this._http.delete<void>(`${apiUrl}/folders/${encodeURIComponent(id)}`));
   }
