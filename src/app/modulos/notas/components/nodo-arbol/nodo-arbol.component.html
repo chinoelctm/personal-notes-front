@@ -1,37 +1,37 @@
 <!-- Fila de la carpeta -->
 <div class="group flex items-center rounded-lg text-xs transition-colors"
-     [class]="seleccionada ? 'bg-zinc-800 text-white' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60'"
+     [class]="seleccionada ? 'bg-indigo-50 text-indigo-700 dark:bg-zinc-800 dark:text-white' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800/60'"
      [style.padding-left.px]="sangria">
-  <button type="button" (click)="store.alternarCarpeta(nodo.carpeta.id)" class="w-6 h-7 flex items-center justify-center shrink-0 text-zinc-500 hover:text-zinc-200"
+  <button type="button" (click)="store.alternarCarpeta(nodo.carpeta.id)" class="w-6 h-7 flex items-center justify-center shrink-0 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-200"
           [attr.aria-expanded]="expandida" [attr.aria-label]="(expandida ? 'Contraer ' : 'Desplegar ') + nodo.carpeta.name">
     <app-icono [nombre]="expandida ? 'chevron-down' : 'chevron-right'" clase="w-3.5 h-3.5" />
   </button>
   <button type="button" (click)="store.abrirCarpeta(nodo.carpeta.id)" class="flex-1 min-w-0 flex items-center gap-1.5 py-1.5 pr-1 text-left" [title]="nodo.carpeta.path.join(' / ')">
-    <app-icono [nombre]="expandida ? 'folder-open' : 'folder'" [clase]="seleccionada ? 'w-4 h-4 text-indigo-400' : 'w-4 h-4 text-zinc-400'" />
+    <app-icono [nombre]="expandida ? 'folder-open' : 'folder'" [clase]="seleccionada ? 'w-4 h-4 text-indigo-600 dark:text-indigo-400' : 'w-4 h-4 text-slate-400 dark:text-zinc-400'" />
     <span class="truncate">{{ nodo.carpeta.name }}</span>
     @if (nodo.documentos.length > 0) {
-      <span class="ml-auto text-[10px] font-mono text-zinc-500">{{ nodo.documentos.length }}</span>
+      <span class="ml-auto text-[10px] font-mono text-slate-400 dark:text-zinc-500">{{ nodo.documentos.length }}</span>
     }
   </button>
   <!-- Teléfono: un solo botón despliega las acciones con etiqueta (los nombres no se aplastan) -->
-  <button type="button" (click)="accionesAbiertas = !accionesAbiertas" class="md:hidden flex items-center justify-center text-zinc-400 hover:text-white"
+  <button type="button" (click)="accionesAbiertas = !accionesAbiertas" class="md:hidden flex items-center justify-center text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white"
           [attr.aria-expanded]="accionesAbiertas" [attr.aria-label]="'Acciones de ' + nodo.carpeta.name">
     <app-icono nombre="ellipsis" />
   </button>
   <!-- Escritorio: íconos al pasar el mouse o con foco -->
   <div class="hidden items-center shrink-0 md:group-hover:flex md:group-focus-within:flex">
-    <button type="button" (click)="store.nuevoDocumento(nodo.carpeta.id)" class="p-1 text-zinc-400 hover:text-indigo-400" title="Nuevo documento aquí">
+    <button type="button" (click)="store.nuevoDocumento(nodo.carpeta.id)" class="p-1 text-slate-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400" title="Nuevo documento aquí">
       <app-icono nombre="file-plus" clase="w-3.5 h-3.5" />
     </button>
     @if (puedeTenerSubcarpetas) {
-      <button type="button" (click)="store.abrirModalNuevaCarpeta(nodo.carpeta.id)" class="p-1 text-zinc-400 hover:text-indigo-400" title="Crear subcarpeta aquí">
+      <button type="button" (click)="store.abrirModalNuevaCarpeta(nodo.carpeta.id)" class="p-1 text-slate-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400" title="Crear subcarpeta aquí">
         <app-icono nombre="folder-plus" clase="w-3.5 h-3.5" />
       </button>
     }
-    <button type="button" (click)="store.abrirModalEditarCarpeta(nodo.carpeta)" class="p-1 text-zinc-400 hover:text-white" title="Renombrar o mover carpeta">
+    <button type="button" (click)="store.abrirModalEditarCarpeta(nodo.carpeta)" class="p-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white" title="Renombrar o mover carpeta">
       <app-icono nombre="edit" clase="w-3 h-3" />
     </button>
-    <button type="button" (click)="store.eliminarCarpeta(nodo.carpeta)" class="p-1 text-zinc-400 hover:text-rose-400" title="Eliminar carpeta">
+    <button type="button" (click)="store.eliminarCarpeta(nodo.carpeta)" class="p-1 text-slate-500 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400" title="Eliminar carpeta">
       <app-icono nombre="trash" clase="w-3 h-3" />
     </button>
   </div>
@@ -39,18 +39,18 @@
 
 @if (accionesAbiertas) {
   <div class="md:hidden grid grid-cols-2 gap-1 py-1 pr-1 text-xs fade-enter" [style.padding-left.px]="sangria + 24">
-    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-zinc-800 text-zinc-200">
+    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
       <app-icono nombre="file-plus" /> Documento
     </button>
     @if (puedeTenerSubcarpetas) {
-      <button type="button" (click)="accionesAbiertas = false; store.abrirModalNuevaCarpeta(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-zinc-800 text-zinc-200">
+      <button type="button" (click)="accionesAbiertas = false; store.abrirModalNuevaCarpeta(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
         <app-icono nombre="folder-plus" /> Subcarpeta
       </button>
     }
-    <button type="button" (click)="accionesAbiertas = false; store.abrirModalEditarCarpeta(nodo.carpeta)" class="flex items-center gap-2 px-2 rounded-lg bg-zinc-800 text-zinc-200">
+    <button type="button" (click)="accionesAbiertas = false; store.abrirModalEditarCarpeta(nodo.carpeta)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
       <app-icono nombre="edit" /> Renombrar / mover
     </button>
-    <button type="button" (click)="accionesAbiertas = false; store.eliminarCarpeta(nodo.carpeta)" class="flex items-center gap-2 px-2 rounded-lg bg-zinc-800 text-rose-300">
+    <button type="button" (click)="accionesAbiertas = false; store.eliminarCarpeta(nodo.carpeta)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-rose-600 dark:text-rose-300">
       <app-icono nombre="trash" /> Eliminar
     </button>
   </div>
@@ -64,23 +64,23 @@
 
     @for (documento of nodo.documentos; track documento.id) {
       <div class="group flex items-center rounded-md text-xs transition-colors"
-           [class]="documento.id === documentoActivoId ? 'bg-indigo-600/25 text-white' : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'"
+           [class]="documento.id === documentoActivoId ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-600/25 dark:text-white' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800/40'"
            [style.padding-left.px]="sangria + 24">
         <button type="button" (click)="store.abrirDocumento(documento.id)" class="flex-1 min-w-0 flex items-center gap-1.5 py-1.5 text-left" [title]="documento.title">
-          <app-icono nombre="file-text" clase="w-3.5 h-3.5 text-zinc-500" />
+          <app-icono nombre="file-text" clase="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500" />
           <span class="truncate">{{ documento.title }}</span>
           @if (documento.priority !== 'None') {
             <span class="w-2 h-2 rounded-full shrink-0 ml-1" [class]="prioridades[documento.priority].punto" [title]="'Prioridad ' + prioridades[documento.priority].etiqueta"></span>
           }
         </button>
-        <button type="button" (click)="store.eliminarDocumento(documento)" class="p-1 mr-1 text-zinc-500 hover:text-rose-400 md:hidden md:group-hover:block md:group-focus-within:block" title="Eliminar documento">
+        <button type="button" (click)="store.eliminarDocumento(documento)" class="p-1 mr-1 text-slate-400 dark:text-zinc-500 hover:text-rose-600 dark:hover:text-rose-400 md:hidden md:group-hover:block md:group-focus-within:block" title="Eliminar documento">
           <app-icono nombre="trash" clase="w-3 h-3" />
         </button>
       </div>
     }
 
     @if (nodo.hijos.length === 0 && nodo.documentos.length === 0) {
-      <div class="py-1 text-[11px] italic text-zinc-600" [style.padding-left.px]="sangria + 28">Carpeta vacía</div>
+      <div class="py-1 text-[11px] italic text-slate-400 dark:text-zinc-600" [style.padding-left.px]="sangria + 28">Carpeta vacía</div>
     }
   </div>
 }

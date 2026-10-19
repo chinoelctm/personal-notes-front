@@ -29,7 +29,7 @@ La API debe tener el origen del front en `Cors:AllowedOrigins`.
 - **Inicio / Dashboard**: tarjetas con el total de notas, editadas en las últimas 24 h, prioridad alta y
   media/baja (las calcula la API), los **últimos 5 documentos editados** (título, carpeta de origen y fecha)
   y las carpetas principales.
-- **Explorador lateral**: árbol de carpetas y documentos (hasta 5 niveles). En el teléfono se oculta a la
+- **Explorador lateral**: árbol de carpetas y documentos (hasta 5 niveles); claro u oscuro según el tema del sistema, como el resto de la app. En el teléfono se oculta a la
   izquierda y se abre con el botón hamburguesa; cada carpeta tiene un menú "⋯" con sus acciones.
 - **Directorio**: documentos de la carpeta en una cuadrícula responsiva (1/2/3 columnas), ordenados por
   última edición, con vista previa, fechas, banderita de prioridad y filtros por prioridad.

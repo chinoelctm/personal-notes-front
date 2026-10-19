@@ -18,8 +18,11 @@ app-root {
   border-radius: 9999px;
 }
 
-.scroll-oscuro::-webkit-scrollbar-thumb {
-  background: #3f3f46;
+// Explorador: barra de scroll oscura solo con el tema oscuro del sistema
+@media (prefers-color-scheme: dark) {
+  .scroll-oscuro::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+  }
 }
 
 .fade-enter {
