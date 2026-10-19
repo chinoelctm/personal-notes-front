@@ -49,5 +49,16 @@
       <span class="hidden lg:inline">Importar Respaldo</span>
     </label>
     <input #archivo id="importar-respaldo" type="file" accept=".json,application/json" class="hidden" (change)="importar(archivo)">
+
+    <!-- Sesión: nombre del usuario y cerrar sesión -->
+    <span class="hidden xl:inline w-px h-6 bg-slate-200 dark:bg-slate-700 mx-1"></span>
+    <span class="hidden 2xl:inline text-sm font-medium text-slate-600 dark:text-slate-300 truncate max-w-[10rem]" [title]="sesion.usuario()?.username ?? ''">
+      {{ sesion.usuario()?.name }}
+    </span>
+    <button type="button" (click)="cerrarSesion()" class="flex items-center justify-center gap-1.5 h-10 px-2.5 sm:px-3 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-950/50 dark:hover:text-rose-300 transition-colors"
+            [title]="'Cerrar sesión de ' + (sesion.usuario()?.name ?? '')">
+      <app-icono nombre="log-out" />
+      <span class="hidden lg:inline">Salir</span>
+    </button>
   </div>
 </header>

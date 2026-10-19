@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { NotasStore } from '../../core/state/notas.store';
 import { AsistenteStore } from '../../core/state/asistente.store';
+import { SesionStore } from '../../core/state/sesion.store';
+import { ConfirmService } from '../../core/utils/confirm.service';
 import { EstadoGuardado } from '../../core/interfaces/Notas';
 import { IconoComponent } from '../icono/icono.component';
 
@@ -50,7 +52,25 @@ export class HeaderComponent {
   protected readonly store = inject(NotasStore);
   protected readonly asistente = inject(AsistenteStore);
 
+  protected readonly sesion = inject(SesionStore);
+  private readonly _confirmService = inject(ConfirmService);
+
   protected readonly estado = computed(() => INDICADORES[this.store.estadoGuardado()]);
+
+  protected async cerrarSesion() {
+    const sinPublicar = this.store.estadoGuardado() === 'borrador';
+    const respuesta = await this._confirmService.preguntar({
+      titulo: '¿Cerrar sesión?',
+      mensaje: sinPublicar
+        ? 'Tienes cambios sin publicar: al salir se borran de este navegador junto con la copia local de tus notas.'
+        : 'Se borrará de este navegador la copia local de tus notas y los borradores sin publicar.',
+      opciones: [
+        { etiqueta: 'Cancelar', valor: 'no', estilo: 'secundario' },
+        { etiqueta: 'Cerrar sesión', valor: 'si', estilo: sinPublicar ? 'peligro' : 'primario' }
+      ]
+    });
+    if (respuesta === 'si') await this.sesion.cerrarSesion();
+  }
 
   protected buscar(texto: string) {
     this.store.buscar(texto);

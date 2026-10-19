@@ -1,0 +1,12 @@
+{
+  "/api/v1/auth": {
+    "target": "http://localhost:5090",
+    "secure": false,
+    "changeOrigin": false
+  },
+  "/api": {
+    "target": "http://localhost:5080",
+    "secure": false,
+    "changeOrigin": false
+  }
+}

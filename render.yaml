@@ -9,8 +9,17 @@ services:
       # Angular 17 soporta Node 18/20
       - key: NODE_VERSION
         value: "20"
+    # Se aplican en orden: la primera que coincide gana.
     routes:
-      # SPA: cualquier ruta la resuelve Angular
+      # Las APIs se sirven por el mismo origen que el front: Render reenvía la request y la respuesta (con sus
+      # Set-Cookie). Así las cookies HttpOnly de la sesión son del propio sitio (SameSite=Strict, sin CORS).
+      - type: rewrite
+        source: /api/v1/auth/*
+        destination: https://personal-notes-auth-services.onrender.com/api/v1/auth/*
+      - type: rewrite
+        source: /api/*
+        destination: https://personal-notes-service-hgni.onrender.com/api/*
+      # SPA: cualquier otra ruta la resuelve Angular
       - type: rewrite
         source: /*
         destination: /index.html
