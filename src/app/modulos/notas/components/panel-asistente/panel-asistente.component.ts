@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { NotasStore } from '../../../../core/state/notas.store';
 import { AsistenteStore } from '../../../../core/state/asistente.store';
 import { IconoComponent } from '../../../../shared/icono/icono.component';
+import { formatearRespuesta, LineaFormato } from '../../../../core/utils/formato-respuesta';
 
 @Component({
   selector: 'app-panel-asistente',
@@ -30,6 +31,18 @@ export class PanelAsistenteComponent {
         if (elemento) elemento.scrollTop = elemento.scrollHeight;
       });
     });
+  }
+
+  // Las respuestas no cambian una vez recibidas: se formatean una sola vez
+  private readonly _formatos = new Map<string, LineaFormato[]>();
+
+  protected formato(texto: string): LineaFormato[] {
+    let lineas = this._formatos.get(texto);
+    if (!lineas) {
+      lineas = formatearRespuesta(texto);
+      this._formatos.set(texto, lineas);
+    }
+    return lineas;
   }
 
   protected adjuntarDocumentoActivo() {

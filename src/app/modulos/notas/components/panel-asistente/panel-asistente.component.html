@@ -85,7 +85,20 @@
           <div class="flex gap-2.5">
             <div class="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0"><app-icono nombre="bot" /></div>
             <div class="max-w-[85%] min-w-0 space-y-1.5">
-              <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl rounded-tl-md p-3 text-slate-700 dark:text-slate-200 leading-relaxed shadow-sm whitespace-pre-wrap break-words">{{ mensaje.texto }}</div>
+              <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl rounded-tl-md p-3 text-slate-700 dark:text-slate-200 leading-relaxed shadow-sm break-words space-y-0.5">
+                @for (linea of formato(mensaje.texto); track $index) {
+                  @if (linea.segmentos.length === 0) {
+                    <div class="h-2"></div>
+                  } @else {
+                    <div class="flex gap-1.5" [class.pl-1]="linea.marcador">
+                      @if (linea.marcador) {
+                        <span class="shrink-0 text-indigo-500 font-semibold">{{ linea.marcador }}</span>
+                      }
+                      <span class="min-w-0">@for (segmento of linea.segmentos; track $index) {@if (segmento.negrita) {<strong class="font-semibold text-slate-900 dark:text-white">{{ segmento.texto }}</strong>} @else {{{ segmento.texto }}}}</span>
+                    </div>
+                  }
+                }
+              </div>
               @if (mensaje.fuentes?.length) {
                 <div class="flex flex-wrap items-center gap-1 text-[11px]" aria-label="Fuentes de la respuesta">
                   <span class="text-slate-400">Fuentes:</span>
