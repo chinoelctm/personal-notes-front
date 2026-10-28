@@ -1,0 +1,83 @@
+@if (store.borrador(); as borrador) {
+  <!-- Herramientas del documento Markdown -->
+  <div class="border-b border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/40 px-2 sm:px-6 py-1.5 flex items-center gap-2 overflow-x-auto shrink-0" role="toolbar" aria-label="Documento Markdown">
+    <div class="flex rounded-lg border border-slate-200 dark:border-slate-600 overflow-hidden shrink-0" role="group" aria-label="Modo de vista">
+      @for (opcion of [{ valor: 'codigo', etiqueta: 'Markdown', icono: 'hash' }, { valor: 'dividido', etiqueta: 'Dividido', icono: 'columna-mas' }, { valor: 'vista', etiqueta: 'Documento', icono: 'eye' }]; track opcion.valor) {
+        <button type="button" (click)="cambiarModo($any(opcion.valor))" [attr.aria-pressed]="modo === opcion.valor"
+                class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition"
+                [class]="modo === opcion.valor ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'"
+                [class.hidden]="opcion.valor === 'dividido'" [class.lg:flex]="opcion.valor === 'dividido'">
+          <app-icono [nombre]="$any(opcion.icono)" clase="w-3.5 h-3.5" />
+          <span>{{ opcion.etiqueta }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- Formato: solo cuando se ve el texto -->
+    @if (modo !== 'vista') {
+      <span class="w-px h-5 bg-slate-300 dark:bg-slate-600 mx-1 shrink-0"></span>
+      @for (herramienta of herramientas; track herramienta.titulo) {
+        <button type="button" (mousedown)="$event.preventDefault()" (click)="herramienta.accion()" class="p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition shrink-0" [title]="herramienta.titulo">
+          @if (herramienta.icono) {
+            <app-icono [nombre]="herramienta.icono" />
+          } @else {
+            <span class="text-xs font-bold px-0.5">{{ herramienta.texto }}</span>
+          }
+        </button>
+        @if (herramienta.separador) {
+          <span class="w-px h-5 bg-slate-300 dark:bg-slate-600 mx-1 shrink-0"></span>
+        }
+      }
+    }
+
+    <label for="archivo-markdown" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition cursor-pointer shrink-0 ml-auto" title="Cargar un archivo .md (reemplaza el texto)">
+      <app-icono nombre="upload" /><span>Cargar .md</span>
+    </label>
+    <input #selectorMarkdown id="archivo-markdown" type="file" accept=".md,.markdown,.mdown,.txt,text/markdown" class="hidden" (change)="cargarDesdeSelector(selectorMarkdown)">
+  </div>
+
+  <div class="flex-1 min-h-0 flex flex-col bg-slate-50 dark:bg-slate-900 p-2 sm:p-4 gap-2 sm:gap-3"
+       (dragover)="alArrastrar($event)" (dragleave)="arrastrando = false" (drop)="alSoltar($event)">
+    <!-- Título y ubicación -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+      <input type="text" [value]="borrador.title" (input)="cambiarTitulo($event)" maxlength="200"
+             placeholder="Título del documento…" aria-label="Título del documento"
+             class="flex-1 min-w-0 text-lg sm:text-xl font-bold text-slate-900 dark:text-white bg-transparent border-0 border-b border-transparent hover:border-slate-200 dark:hover:border-slate-600 focus:border-indigo-500 focus:ring-0 px-0 py-1 outline-none placeholder:text-slate-300 dark:placeholder:text-slate-600">
+      <select [value]="borrador.folderId" (change)="moverA($event)" aria-label="Ubicación del documento"
+              class="sm:max-w-xs text-xs py-1.5 pl-2 pr-8 rounded-lg border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:ring-indigo-200">
+        @for (carpeta of carpetasOrdenadas(); track carpeta.id) {
+          <option [value]="carpeta.id" [selected]="carpeta.id === borrador.folderId">{{ carpeta.path.join(' / ') }}</option>
+        }
+      </select>
+    </div>
+
+    @if (arrastrando) {
+      <div class="border-2 border-dashed border-indigo-400 bg-indigo-50/60 dark:bg-indigo-950/40 rounded-xl p-3 text-center text-sm font-medium text-indigo-700 dark:text-indigo-300 flex items-center justify-center gap-2 pointer-events-none">
+        <app-icono nombre="upload" clase="w-5 h-5" />
+        <span>Suelta el archivo .md para cargarlo</span>
+      </div>
+    }
+
+    <!-- Texto y documento: se ocultan con clases (no se destruyen) para no perder el cursor ni el scroll -->
+    <div class="flex-1 min-h-[420px] flex flex-col lg:flex-row gap-2 sm:gap-3">
+      <textarea #codigo (input)="alEscribir()" (keydown)="alPresionarTecla($event)" spellcheck="true" autocomplete="off"
+                aria-label="Texto Markdown del documento"
+                placeholder="# Título&#10;&#10;Escribe en **Markdown** o usa “Cargar .md”…&#10;&#10;- Listas&#10;- [Enlaces](https://ejemplo.com)&#10;&#10;```&#10;bloques de código&#10;```"
+                class="flex-1 min-h-[300px] w-full resize-none rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#1e1e24] text-slate-800 dark:text-slate-100 font-mono text-sm leading-relaxed p-4 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900 placeholder:text-slate-400"
+                [class.hidden]="modo === 'vista'"></textarea>
+
+      <!-- El documento formateado, con la misma hoja y estilos que las notas -->
+      <div class="flex-1 min-h-[300px] overflow-y-auto rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm"
+           [class.hidden]="modo === 'codigo'">
+        @if (html()) {
+          <article class="contenido-nota mx-auto max-w-4xl p-4 sm:p-8 md:p-12" [innerHTML]="html()" aria-label="Documento formateado"></article>
+        } @else {
+          <div class="h-full flex flex-col items-center justify-center gap-2 p-8 text-center text-sm text-slate-400 dark:text-slate-500">
+            <app-icono nombre="hash" clase="w-8 h-8" />
+            <span>El documento aparecerá aquí cuando escribas en Markdown.</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

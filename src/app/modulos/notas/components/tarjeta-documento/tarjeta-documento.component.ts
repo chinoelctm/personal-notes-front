@@ -27,6 +27,6 @@ export class TarjetaDocumentoComponent implements OnChanges {
 
   // Se calcula una vez por versión del documento (el HTML puede ser grande)
   ngOnChanges(): void {
-    this.vistaPrevia = this._vistaPrevia.vistaPrevia(this.documento.content, config.LargoVistaPrevia);
+    this.vistaPrevia = this._vistaPrevia.vistaPrevia(this.documento.content, config.LargoVistaPrevia, this.documento.type);
   }
 }

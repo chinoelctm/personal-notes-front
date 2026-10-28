@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { DocumentResponse } from '../interfaces/responses/DocumentResponse';
+import { DocumentResponse, DocumentType } from '../interfaces/responses/DocumentResponse';
 import { ResultadoBusqueda } from '../interfaces/Notas';
+import { markdownAHtml } from './markdown';
 
 export interface SegmentoTexto {
     texto:     string;
@@ -32,9 +33,14 @@ export class VistaPreviaService {
     return (documento.body.textContent ?? '').replace(/\s+/g, ' ').trim();
   }
 
+  /** Texto visible de un documento según su tipo: un Markdown se lee sin #, ** ni la sintaxis de tablas. */
+  textoDe(contenido: string | null | undefined, tipo: DocumentType = 'Rich'): string {
+    return this.textoPlano(tipo === 'Markdown' ? markdownAHtml(contenido) : contenido);
+  }
+
   /** Vista previa de la tarjeta: el texto plano recortado a una palabra completa. */
-  vistaPrevia(html: string | null | undefined, largo: number): string {
-    const texto = this.textoPlano(html);
+  vistaPrevia(contenido: string | null | undefined, largo: number, tipo: DocumentType = 'Rich'): string {
+    const texto = this.textoDe(contenido, tipo);
     if (texto.length <= largo) return texto;
     const corte = texto.lastIndexOf(' ', largo);
     return `${texto.slice(0, corte > largo * 0.6 ? corte : largo).trimEnd()}…`;
@@ -66,7 +72,7 @@ export class VistaPreviaService {
     const resultados: (ResultadoBusqueda & { orden: number })[] = [];
     for (const documento of documentos) {
       const titulo = this.normalizar(documento.title);
-      const texto = this.textoPlano(documento.content);
+      const texto = this.textoDe(documento.content, documento.type);
       const contenido = this.normalizar(texto);
 
       const coinciden = terminos.every(t => titulo.includes(t) || contenido.includes(t));

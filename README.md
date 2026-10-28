@@ -57,6 +57,14 @@ son del propio sitio y no hace falta CORS. Quién reenvía cada ruta:
   la página corre, pero en un origen aislado que no puede leer las notas, el `localStorage` ni llamar a la API.
   Las páginas de más de 300.000 caracteres no se guardan en la copia local (no caben en `localStorage`); llegan
   siempre desde la API. Límite de archivo: 10 MB (`TamanoMaximoHtmlMb` en `config.json`).
+- **Documentos Markdown**: botón *Markdown* (ícono `#`) en el directorio, el explorador o el menú "⋯". El editor
+  tiene tres modos: *Markdown* (el texto), *Dividido* y *Documento* (el resultado con la misma hoja y estilos que las
+  notas). La barra de formato inserta negrita, cursiva, títulos, listas, citas, código, tablas y enlaces; `Ctrl+B`,
+  `Ctrl+I` y `Ctrl+S` también funcionan. *Cargar .md* (o arrastrar el archivo) llena el texto y toma el primer
+  `# Título` como título. Se convierte con [marked](https://marked.js.org) (GitHub Flavored Markdown: tablas y
+  tareas `- [ ]`) y se muestra con `[innerHTML]`, que pasa por el saneamiento de Angular: el HTML que traiga el
+  Markdown no ejecuta scripts. Las tarjetas, el buscador y el asistente leen su texto sin la sintaxis. Límite de
+  archivo: 5 MB (`TamanoMaximoMarkdownMb`).
 - **Eliminar**: borrar un documento o una carpeta es **permanente** (la API hace borrado físico; una carpeta
   se lleva sus subcarpetas y documentos). Antes, un popup pide confirmación y detalla qué se va a borrar.
 - **Cerrar sesión** (*Salir*, en el header): revoca la sesión en la API y borra de este navegador la copia local,

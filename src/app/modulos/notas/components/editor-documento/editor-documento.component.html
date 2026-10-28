@@ -76,6 +76,8 @@
 
     @if (borrador.type === 'Html') {
       <app-editor-html />
+    } @else if (borrador.type === 'Markdown') {
+      <app-editor-markdown />
     } @else {
     <!-- Herramientas de edición (desplazables en el teléfono) -->
     <div class="border-b border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/40 px-2 sm:px-6 py-1.5 flex items-center gap-1 overflow-x-auto shrink-0" role="toolbar" aria-label="Formato del documento">

@@ -6,6 +6,7 @@
   "LargoMaximoContextoIa": 30000,
   "LargoMaximoDocumentoEnCache": 300000,
   "TamanoMaximoHtmlMb": 10,
+  "TamanoMaximoMarkdownMb": 5,
   "SugerenciasIa": [
     { "etiqueta": "📚 ¿Qué notas tengo?", "prompt": "¿Qué documentos tengo guardados y de qué trata cada uno?" },
     { "etiqueta": "📌 Resumir", "prompt": "Resume este documento en 3 puntos clave." },

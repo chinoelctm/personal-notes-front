@@ -52,7 +52,7 @@ export class AsistenteStore {
 
   /** "Preguntar sobre este documento": adjunta el texto del documento activo y abre el panel. */
   preguntarSobreDocumento(borrador: Borrador) {
-    const texto = this._vistaPrevia.textoPlano(borrador.content).slice(0, config.LargoMaximoContextoIa);
+    const texto = this._vistaPrevia.textoDe(borrador.content, borrador.type).slice(0, config.LargoMaximoContextoIa);
     const titulo = borrador.title.trim() || 'Sin título';
     this.contexto.set({ titulo, texto, documentoId: borrador.documentoId });
     this.mensajes.update(m => [...m, { rol: 'sistema', texto: `Documento adjunto como contexto: "${titulo}"` }]);

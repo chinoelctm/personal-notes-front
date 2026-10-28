@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { LowerCasePipe } from '@angular/common';
 import config from '../../../../../assets/config/config.json';
+import { DocumentResponse } from '../../../../core/interfaces/responses/DocumentResponse';
 import { NotasStore } from '../../../../core/state/notas.store';
 import { VistaPreviaService } from '../../../../core/utils/vista-previa.service';
 import { FechaRelativaPipe } from '../../../../core/pipes/fecha-relativa.pipe';
@@ -24,7 +25,7 @@ export class PanelInicioComponent {
   protected readonly resumen = this.store.resumen;
   protected readonly cantidadRecientes = config.CantidadRecientes;
 
-  protected vistaPrevia(html: string): string {
-    return this._vistaPrevia.vistaPrevia(html, config.LargoVistaPrevia);
+  protected vistaPrevia(documento: DocumentResponse): string {
+    return this._vistaPrevia.vistaPrevia(documento.content, config.LargoVistaPrevia, documento.type);
   }
 }

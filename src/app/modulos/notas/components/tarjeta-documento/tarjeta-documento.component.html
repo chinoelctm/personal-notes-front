@@ -9,6 +9,10 @@
         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300 dark:border-sky-800">
           <app-icono nombre="code-xml" clase="w-3 h-3" /> HTML
         </span>
+      } @else if (documento.type === 'Markdown') {
+        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/50 dark:text-violet-300 dark:border-violet-800">
+          <app-icono nombre="hash" clase="w-3 h-3" /> Markdown
+        </span>
       }
     </span>
     <span class="flex-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">{{ vistaPrevia || 'Sin contenido todavía.' }}</span>

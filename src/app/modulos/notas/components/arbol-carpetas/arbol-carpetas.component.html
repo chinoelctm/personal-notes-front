@@ -15,6 +15,9 @@
       <button type="button" (click)="store.nuevoDocumento(null, 'Html')" class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition" title="Nueva página HTML en la carpeta actual">
         <app-icono nombre="code-xml" />
       </button>
+      <button type="button" (click)="store.nuevoDocumento(null, 'Markdown')" class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition" title="Nuevo documento Markdown en la carpeta actual">
+        <app-icono nombre="hash" />
+      </button>
       <button type="button" (click)="store.abrirModalNuevaCarpeta(store.carpetaSeleccionadaId())" class="w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition" title="Nueva carpeta en la carpeta actual">
         <app-icono nombre="folder-plus" />
       </button>
