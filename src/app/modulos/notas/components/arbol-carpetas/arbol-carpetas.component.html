@@ -6,7 +6,7 @@
   <div class="px-3 py-2 border-b border-white/60 dark:border-white/10 flex items-center justify-between">
     <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
       <app-icono nombre="compass" clase="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-      <span>Explorador</span>
+      <span class="hidden md:inline">Explorador</span>
     </div>
     <div class="flex items-center gap-0.5">
       <button type="button" (click)="store.nuevoDocumento()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/60 dark:hover:bg-white/10 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition" title="Nuevo documento en la carpeta actual">
@@ -72,5 +72,14 @@
       <app-icono nombre="folder-plus" clase="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
       <span>Nueva Carpeta / Subcarpeta</span>
     </button>
+    <!-- Teléfono: los respaldos viven aquí (en el header no caben junto al buscador) -->
+    <div class="sm:hidden grid grid-cols-2 gap-2">
+      <button type="button" (click)="store.exportarRespaldo()" class="vidrio-sutil h-10 rounded-xl text-xs font-medium text-slate-700 dark:text-zinc-200 flex items-center justify-center gap-1.5">
+        <app-icono nombre="download" clase="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> Exportar
+      </button>
+      <label for="importar-respaldo" class="vidrio-sutil h-10 rounded-xl text-xs font-medium text-slate-700 dark:text-zinc-200 flex items-center justify-center gap-1.5 cursor-pointer">
+        <app-icono nombre="upload" clase="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> Importar
+      </label>
+    </div>
   </div>
 </aside>

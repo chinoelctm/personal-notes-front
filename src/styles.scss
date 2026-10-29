@@ -18,6 +18,15 @@ app-root {
   border-radius: 9999px;
 }
 
+// Desplazamiento horizontal sin barra visible (rutas de carpetas, filtros)
+.sin-scroll {
+  scrollbar-width: none;
+}
+
+.sin-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 // Explorador: barra de scroll oscura solo con el tema oscuro del sistema
 @media (prefers-color-scheme: dark) {
   .scroll-oscuro::-webkit-scrollbar-thumb {
@@ -29,24 +38,27 @@ app-root {
 
 // Fondo degradado propio (sin imágenes): manchas de color difuminadas que se ven a través del vidrio.
 // Sigue al tema de Windows como el resto de la app.
+// Las manchas cubren toda la pantalla (también el centro): el vidrio solo se nota si hay color detrás.
 body.fondo-app {
-  background-color: #eef1f8;
+  background-color: #e8ecf7;
   background-image:
-    radial-gradient(60rem 40rem at 8% -10%, rgba(129, 140, 248, 0.45), transparent 60%),
-    radial-gradient(50rem 36rem at 105% 5%, rgba(56, 189, 248, 0.35), transparent 60%),
-    radial-gradient(46rem 40rem at 70% 110%, rgba(244, 114, 182, 0.28), transparent 60%),
-    radial-gradient(40rem 30rem at -5% 95%, rgba(52, 211, 153, 0.22), transparent 60%);
+    radial-gradient(55% 60% at 12% 8%, rgba(129, 140, 248, 0.70), transparent 70%),
+    radial-gradient(45% 55% at 92% 12%, rgba(56, 189, 248, 0.55), transparent 70%),
+    radial-gradient(50% 55% at 50% 55%, rgba(167, 139, 250, 0.35), transparent 70%),
+    radial-gradient(50% 60% at 82% 95%, rgba(244, 114, 182, 0.50), transparent 70%),
+    radial-gradient(45% 55% at 5% 92%, rgba(52, 211, 153, 0.40), transparent 70%);
   background-attachment: fixed;
 }
 
 @media (prefers-color-scheme: dark) {
   body.fondo-app {
-    background-color: #070a16;
+    background-color: #0b1020;
     background-image:
-      radial-gradient(60rem 40rem at 8% -10%, rgba(79, 70, 229, 0.45), transparent 60%),
-      radial-gradient(50rem 36rem at 105% 5%, rgba(14, 116, 144, 0.40), transparent 60%),
-      radial-gradient(46rem 40rem at 70% 110%, rgba(147, 51, 234, 0.30), transparent 60%),
-      radial-gradient(40rem 30rem at -5% 95%, rgba(5, 150, 105, 0.22), transparent 60%);
+      radial-gradient(55% 60% at 12% 8%, rgba(99, 102, 241, 0.65), transparent 70%),
+      radial-gradient(45% 55% at 92% 12%, rgba(14, 165, 233, 0.45), transparent 70%),
+      radial-gradient(50% 55% at 50% 55%, rgba(124, 58, 237, 0.35), transparent 70%),
+      radial-gradient(50% 60% at 82% 95%, rgba(219, 39, 119, 0.40), transparent 70%),
+      radial-gradient(45% 55% at 5% 92%, rgba(16, 185, 129, 0.30), transparent 70%);
   }
 }
 
