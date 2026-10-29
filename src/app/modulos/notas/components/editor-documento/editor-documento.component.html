@@ -1,7 +1,7 @@
 @if (store.borrador(); as borrador) {
-  <section class="flex-1 min-h-0 flex flex-col bg-white dark:bg-slate-800" aria-label="Editor de documento">
+  <section class="vidrio entrada flex-1 min-h-0 flex flex-col m-2 sm:m-3 rounded-2xl overflow-hidden" aria-label="Editor de documento">
     <!-- Barra superior: en el teléfono se apila (ubicación arriba, acciones abajo) -->
-    <div class="border-b border-slate-200 dark:border-slate-700 px-3 sm:px-6 py-2.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 shrink-0">
+    <div class="border-b border-white/60 dark:border-white/10 px-3 sm:px-6 py-2.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2 shrink-0">
       <div class="flex items-center gap-2 min-w-0">
         <button type="button" (click)="store.volverDesdeEditor()" class="flex items-center justify-center w-10 h-10 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-white transition shrink-0" title="Volver al directorio">
           <app-icono nombre="arrow-left" clase="w-5 h-5" />
@@ -35,7 +35,7 @@
           </button>
           @if (menuPrioridadAbierto) {
             <div class="fixed inset-0 z-40" (click)="menuPrioridadAbierto = false" aria-hidden="true"></div>
-            <div class="absolute right-0 sm:right-0 left-0 sm:left-auto mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-lg py-1.5 z-50 text-xs fade-enter" role="menu">
+            <div class="absolute right-0 sm:right-0 left-0 sm:left-auto mt-1 w-48 vidrio-fuerte border-0 dark:border-slate-600 rounded-xl shadow-lg py-1.5 z-50 text-xs fade-enter" role="menu">
               @for (prioridad of ordenPrioridades; track prioridad) {
                 <button type="button" role="menuitemradio" [attr.aria-checked]="borrador.priority === prioridad" (click)="cambiarPrioridad(prioridad)"
                         class="flex items-center gap-2 w-full px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200">
@@ -80,7 +80,7 @@
       <app-editor-markdown />
     } @else {
     <!-- Herramientas de edición (desplazables en el teléfono) -->
-    <div class="border-b border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-900/40 px-2 sm:px-6 py-1.5 flex items-center gap-1 overflow-x-auto shrink-0" role="toolbar" aria-label="Formato del documento">
+    <div class="border-b border-white/60 dark:border-white/10 bg-white/30 dark:bg-white/[0.03] px-2 sm:px-6 py-1.5 flex items-center gap-1 overflow-x-auto shrink-0" role="toolbar" aria-label="Formato del documento">
       @for (herramienta of herramientasTexto; track herramienta.titulo) {
         <button type="button" (mousedown)="$event.preventDefault()" (click)="comando(herramienta.comando, herramienta.valor)" class="p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition shrink-0" [title]="herramienta.titulo">
           @if (herramienta.icono) {
@@ -112,7 +112,7 @@
     </div>
 
     <!-- Hoja central -->
-    <div class="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 p-3 sm:p-6 md:p-8">
+    <div class="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8">
       <div class="mx-auto w-full max-w-4xl bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 sm:p-8 md:p-12 min-h-full flex flex-col"
            (dragover)="alArrastrar($event)" (dragleave)="arrastrando = false" (drop)="alSoltar($event)">
         <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3 text-xs text-slate-500 dark:text-slate-400">

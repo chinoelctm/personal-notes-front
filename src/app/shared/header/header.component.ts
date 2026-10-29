@@ -17,25 +17,25 @@ const INDICADORES: Record<EstadoGuardado, IndicadorEstado> = {
   sincronizado: {
     texto: 'Guardado',
     detalle: 'Todo está publicado y guardado localmente',
-    clase: 'text-emerald-700 bg-emerald-50 border-emerald-100 dark:text-emerald-300 dark:bg-emerald-950/50 dark:border-emerald-900',
+    clase: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20 dark:text-emerald-300',
     punto: 'bg-emerald-500'
   },
   borrador: {
     texto: 'Borrador local',
     detalle: 'Los cambios están guardados en este navegador; presiona Publicar para enviarlos',
-    clase: 'text-amber-700 bg-amber-50 border-amber-100 dark:text-amber-300 dark:bg-amber-950/50 dark:border-amber-900',
+    clase: 'text-amber-700 bg-amber-500/10 border-amber-500/25 dark:text-amber-300',
     punto: 'bg-amber-500 animate-pulse'
   },
   publicando: {
     texto: 'Publicando…',
     detalle: 'Enviando el documento a la API',
-    clase: 'text-indigo-700 bg-indigo-50 border-indigo-100 dark:text-indigo-300 dark:bg-indigo-950/50 dark:border-indigo-900',
+    clase: 'text-indigo-700 bg-indigo-500/10 border-indigo-500/25 dark:text-indigo-300',
     punto: 'bg-indigo-500 animate-pulse'
   },
   'sin-conexion': {
     texto: 'Sin conexión',
     detalle: 'La API no responde: se muestra la copia local',
-    clase: 'text-rose-700 bg-rose-50 border-rose-100 dark:text-rose-300 dark:bg-rose-950/50 dark:border-rose-900',
+    clase: 'text-rose-700 bg-rose-500/10 border-rose-500/25 dark:text-rose-300',
     punto: 'bg-rose-500'
   }
 };
@@ -56,6 +56,10 @@ export class HeaderComponent {
   private readonly _confirmService = inject(ConfirmService);
 
   protected readonly estado = computed(() => INDICADORES[this.store.estadoGuardado()]);
+
+  // 'Joaquín Márquez' => 'JM' (avatar del header)
+  protected readonly iniciales = computed(() =>
+    (this.sesion.usuario()?.name ?? '').split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0].toUpperCase()).join(''));
 
   protected async cerrarSesion() {
     const sinPublicar = this.store.estadoGuardado() === 'borrador';

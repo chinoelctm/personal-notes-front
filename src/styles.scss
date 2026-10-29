@@ -25,6 +25,169 @@ app-root {
   }
 }
 
+// ---------- Fondo y vidrio (glassmorphism) ----------
+
+// Fondo degradado propio (sin imágenes): manchas de color difuminadas que se ven a través del vidrio.
+// Sigue al tema de Windows como el resto de la app.
+body.fondo-app {
+  background-color: #eef1f8;
+  background-image:
+    radial-gradient(60rem 40rem at 8% -10%, rgba(129, 140, 248, 0.45), transparent 60%),
+    radial-gradient(50rem 36rem at 105% 5%, rgba(56, 189, 248, 0.35), transparent 60%),
+    radial-gradient(46rem 40rem at 70% 110%, rgba(244, 114, 182, 0.28), transparent 60%),
+    radial-gradient(40rem 30rem at -5% 95%, rgba(52, 211, 153, 0.22), transparent 60%);
+  background-attachment: fixed;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.fondo-app {
+    background-color: #070a16;
+    background-image:
+      radial-gradient(60rem 40rem at 8% -10%, rgba(79, 70, 229, 0.45), transparent 60%),
+      radial-gradient(50rem 36rem at 105% 5%, rgba(14, 116, 144, 0.40), transparent 60%),
+      radial-gradient(46rem 40rem at 70% 110%, rgba(147, 51, 234, 0.30), transparent 60%),
+      radial-gradient(40rem 30rem at -5% 95%, rgba(5, 150, 105, 0.22), transparent 60%);
+  }
+}
+
+@layer components {
+  // Panel de vidrio: tarjetas y secciones
+  .vidrio {
+    @apply bg-white/55 dark:bg-white/[0.06] backdrop-blur-xl border border-white/70 dark:border-white/10
+      shadow-[0_8px_30px_rgba(15,23,42,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)];
+  }
+
+  // Más opaco: barra superior, explorador, modales y menús (texto encima de lo que se mueve detrás)
+  .vidrio-fuerte {
+    @apply bg-white/75 dark:bg-slate-900/60 backdrop-blur-2xl border border-white/80 dark:border-white/10
+      shadow-[0_10px_40px_rgba(15,23,42,0.12)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.45)];
+  }
+
+  // Elementos dentro de un panel (filas, botones secundarios)
+  .vidrio-sutil {
+    @apply bg-white/45 dark:bg-white/[0.05] border border-white/60 dark:border-white/[0.08];
+  }
+
+  // Al pasar el mouse la tarjeta "se levanta" (como whileHover={{ y: -5 }} del diseño de referencia)
+  .levantar {
+    transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.25s ease, border-color 0.2s ease;
+  }
+
+  .levantar:hover {
+    transform: translateY(-4px);
+    @apply shadow-[0_16px_40px_rgba(15,23,42,0.14)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.5)];
+  }
+
+  // backwards: el estado inicial se aplica durante la espera y al terminar el elemento queda libre (el hover de
+  // .levantar puede mover el transform)
+  // Entrada en cascada: cada elemento aparece subiendo y enfocándose; --i es su posición en la lista
+  .entrada {
+    animation: entrada 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 55ms);
+  }
+
+  // Barras horizontales (porcentajes): crecen desde la izquierda
+  .crecer-ancho {
+    transform-origin: left;
+    animation: crecer-ancho 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) 300ms backwards;
+  }
+
+  // Línea de los minigráficos: se traza de izquierda a derecha (el path usa pathLength="1")
+  .dibujar {
+    stroke-dasharray: 1;
+    animation: dibujar 1.1s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    animation-delay: 250ms;
+  }
+
+  // Barras del gráfico: crecen desde abajo
+  .crecer {
+    transform-origin: bottom;
+    animation: crecer 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(180ms + var(--i, 0) * 35ms);
+  }
+}
+
+@keyframes entrada {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes dibujar {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes crecer-ancho {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes crecer {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+// Panel del asistente cerrado (está separado 0.5rem del borde)
+.panel-cerrado {
+  transform: translateX(calc(100% + 1rem));
+}
+
+// Explorador en el teléfono: cajón que sale desde la izquierda (oculto del todo, sin asomar el borde)
+@media (max-width: 767px) {
+  .explorador-cerrado {
+    transform: translateX(calc(-100% - 1rem));
+  }
+}
+
+// El desenfoque cuesta en el teléfono: menos radio y la misma apariencia
+@media (max-width: 767px) {
+  .vidrio,
+  .vidrio-fuerte {
+    --tw-backdrop-blur: blur(10px);
+  }
+}
+
+// "Reducir movimiento" en Windows o el teléfono: sin animaciones de entrada ni de hover
+@media (prefers-reduced-motion: reduce) {
+  .entrada,
+  .crecer,
+  .crecer-ancho,
+  .dibujar,
+  .fade-enter {
+    animation: none;
+  }
+
+  .levantar,
+  .levantar:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
 .fade-enter {
   animation: fadeIn 0.15s ease-out;
 }

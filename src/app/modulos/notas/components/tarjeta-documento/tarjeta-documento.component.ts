@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Input, OnChanges } from '@angular/core';
 import config from '../../../../../assets/config/config.json';
+import { PRIORIDADES } from '../../../../core/utils/prioridades';
 import { NotasStore } from '../../../../core/state/notas.store';
 import { VistaPreviaService } from '../../../../core/utils/vista-previa.service';
 import { DocumentResponse } from '../../../../core/interfaces/responses/DocumentResponse';
@@ -22,6 +23,8 @@ export class TarjetaDocumentoComponent implements OnChanges {
   private readonly _vistaPrevia = inject(VistaPreviaService);
 
   @Input({ required: true }) documento!: DocumentResponse;
+
+  protected readonly prioridades = PRIORIDADES;
 
   protected vistaPrevia = '';
 

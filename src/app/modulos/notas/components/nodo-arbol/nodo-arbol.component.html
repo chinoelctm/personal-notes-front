@@ -1,6 +1,6 @@
 <!-- Fila de la carpeta -->
 <div class="group flex items-center rounded-lg text-xs transition-colors"
-     [class]="seleccionada ? 'bg-indigo-50 text-indigo-700 dark:bg-zinc-800 dark:text-white' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800/60'"
+     [class]="seleccionada ? 'bg-indigo-500/15 text-indigo-700 dark:bg-white/10 dark:text-white' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 hover:bg-white/60 dark:hover:bg-white/[0.07]'"
      [style.padding-left.px]="sangria">
   <button type="button" (click)="store.alternarCarpeta(nodo.carpeta.id)" class="w-6 h-7 flex items-center justify-center shrink-0 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-zinc-200"
           [attr.aria-expanded]="expandida" [attr.aria-label]="(expandida ? 'Contraer ' : 'Desplegar ') + nodo.carpeta.name">
@@ -39,24 +39,24 @@
 
 @if (accionesAbiertas) {
   <div class="md:hidden grid grid-cols-2 gap-1 py-1 pr-1 text-xs fade-enter" [style.padding-left.px]="sangria + 24">
-    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
+    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-white/60 dark:bg-white/10 text-slate-800 dark:text-zinc-200">
       <app-icono nombre="file-plus" /> Documento
     </button>
-    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id, 'Html')" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
+    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id, 'Html')" class="flex items-center gap-2 px-2 rounded-lg bg-white/60 dark:bg-white/10 text-slate-800 dark:text-zinc-200">
       <app-icono nombre="code-xml" /> Página HTML
     </button>
-    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id, 'Markdown')" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
+    <button type="button" (click)="accionesAbiertas = false; store.nuevoDocumento(nodo.carpeta.id, 'Markdown')" class="flex items-center gap-2 px-2 rounded-lg bg-white/60 dark:bg-white/10 text-slate-800 dark:text-zinc-200">
       <app-icono nombre="hash" /> Markdown
     </button>
     @if (puedeTenerSubcarpetas) {
-      <button type="button" (click)="accionesAbiertas = false; store.abrirModalNuevaCarpeta(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
+      <button type="button" (click)="accionesAbiertas = false; store.abrirModalNuevaCarpeta(nodo.carpeta.id)" class="flex items-center gap-2 px-2 rounded-lg bg-white/60 dark:bg-white/10 text-slate-800 dark:text-zinc-200">
         <app-icono nombre="folder-plus" /> Subcarpeta
       </button>
     }
-    <button type="button" (click)="accionesAbiertas = false; store.abrirModalEditarCarpeta(nodo.carpeta)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-slate-800 dark:text-zinc-200">
+    <button type="button" (click)="accionesAbiertas = false; store.abrirModalEditarCarpeta(nodo.carpeta)" class="flex items-center gap-2 px-2 rounded-lg bg-white/60 dark:bg-white/10 text-slate-800 dark:text-zinc-200">
       <app-icono nombre="edit" /> Renombrar / mover
     </button>
-    <button type="button" (click)="accionesAbiertas = false; store.eliminarCarpeta(nodo.carpeta)" class="flex items-center gap-2 px-2 rounded-lg bg-slate-100 dark:bg-zinc-800 text-rose-600 dark:text-rose-300">
+    <button type="button" (click)="accionesAbiertas = false; store.eliminarCarpeta(nodo.carpeta)" class="flex items-center gap-2 px-2 rounded-lg bg-white/60 dark:bg-white/10 text-rose-600 dark:text-rose-300">
       <app-icono nombre="trash" /> Eliminar
     </button>
   </div>
@@ -70,7 +70,7 @@
 
     @for (documento of nodo.documentos; track documento.id) {
       <div class="group flex items-center rounded-md text-xs transition-colors"
-           [class]="documento.id === documentoActivoId ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-600/25 dark:text-white' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-zinc-800/40'"
+           [class]="documento.id === documentoActivoId ? 'bg-indigo-500/20 text-indigo-800 dark:bg-indigo-500/25 dark:text-white' : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-200 hover:bg-white/60 dark:hover:bg-white/[0.07]'"
            [style.padding-left.px]="sangria + 24">
         <button type="button" (click)="store.abrirDocumento(documento.id)" class="flex-1 min-w-0 flex items-center gap-1.5 py-1.5 text-left" [title]="documento.title">
           <app-icono [nombre]="documento.type === 'Html' ? 'code-xml' : documento.type === 'Markdown' ? 'hash' : 'file-text'" clase="w-3.5 h-3.5 text-slate-400 dark:text-zinc-500" />

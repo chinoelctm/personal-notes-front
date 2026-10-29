@@ -1,6 +1,6 @@
-<section class="flex-1 overflow-y-auto p-4 sm:p-6" aria-labelledby="titulo-busqueda">
+<section class="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-6" aria-labelledby="titulo-busqueda">
   <div class="max-w-4xl mx-auto w-full">
-    <div class="flex items-center justify-between gap-3 mb-4 border-b border-slate-200 dark:border-slate-700 pb-3">
+    <div class="vidrio entrada rounded-2xl flex items-center justify-between gap-3 mb-4 p-4">
       <div class="min-w-0">
         <h1 id="titulo-busqueda" class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <app-icono nombre="search" clase="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
@@ -11,14 +11,14 @@
           para "<strong class="text-slate-700 dark:text-slate-200">{{ store.consulta() }}</strong>" en títulos y contenido
         </p>
       </div>
-      <button type="button" (click)="store.cerrarBusqueda()" class="shrink-0 text-xs px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium">
+      <button type="button" (click)="store.cerrarBusqueda()" class="vidrio-sutil shrink-0 text-xs px-3 py-1.5 rounded-xl hover:bg-white/70 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 font-medium">
         Cerrar búsqueda
       </button>
     </div>
 
     <div class="space-y-3 pb-12">
-      @for (resultado of store.resultadosBusqueda(); track resultado.documento.id) {
-        <button type="button" (click)="store.abrirDocumento(resultado.documento.id)" class="w-full text-left p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:shadow-sm transition space-y-1.5">
+      @for (resultado of store.resultadosBusqueda(); track resultado.documento.id; let i = $index) {
+        <button type="button" (click)="store.abrirDocumento(resultado.documento.id)" class="vidrio levantar entrada w-full text-left p-4 rounded-2xl space-y-1.5" [style.--i]="1 + i">
           <span class="flex flex-wrap items-center gap-2">
             <app-icono nombre="file-text" class="text-slate-400" />
             <span class="font-semibold text-slate-900 dark:text-white">
@@ -50,17 +50,17 @@
           }
           <span class="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
             @if (resultado.enTitulo) {
-              <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700">en el título</span>
+              <span class="px-1.5 py-0.5 rounded-md bg-white/60 dark:bg-white/10">en el título</span>
             }
             @if (resultado.enContenido) {
-              <span class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700">en el contenido</span>
+              <span class="px-1.5 py-0.5 rounded-md bg-white/60 dark:bg-white/10">en el contenido</span>
             }
             <span>Editado {{ resultado.documento.updatedOn | fechaRelativa | lowercase }}</span>
           </span>
         </button>
       } @empty {
         <div class="flex flex-col items-center justify-center text-center py-16 px-4">
-          <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mb-4">
+          <div class="w-16 h-16 rounded-2xl vidrio text-slate-400 flex items-center justify-center mb-4">
             <app-icono nombre="search-x" clase="w-8 h-8" />
           </div>
           <h2 class="text-base font-semibold text-slate-800 dark:text-slate-100">Sin coincidencias</h2>

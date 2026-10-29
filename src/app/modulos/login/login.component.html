@@ -1,6 +1,6 @@
 <div class="m-auto w-full max-w-sm px-4 py-10">
-  <div class="flex flex-col items-center gap-3 mb-6">
-    <span class="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+  <div class="entrada flex flex-col items-center gap-3 mb-6">
+    <span class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/40">
       <app-icono nombre="folder-tree" clase="w-7 h-7" />
     </span>
     <h1 class="font-bold text-2xl tracking-tight text-slate-800 dark:text-white">Notas<span class="text-indigo-600 dark:text-indigo-400">IDE</span></h1>
@@ -8,7 +8,7 @@
   </div>
 
   <form (submit)="entrar($event, usuario.value, clave.value)" novalidate
-        class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6 flex flex-col gap-4">
+        class="vidrio-fuerte entrada rounded-3xl p-6 flex flex-col gap-4" style="--i: 1">
     @if (expirada && !error()) {
       <p class="flex items-start gap-2 text-sm rounded-lg px-3 py-2 bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900" role="status">
         <app-icono nombre="clock" clase="w-4 h-4 mt-0.5 shrink-0" />
@@ -22,7 +22,7 @@
         <app-icono nombre="user" clase="w-4 h-4" class="absolute left-3 text-slate-400 pointer-events-none" />
         <input #usuario id="usuario" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required
                [disabled]="enviando()" (input)="error.set(null)"
-               class="w-full pl-9 pr-3 py-2.5 rounded-lg text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-600 focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-900 disabled:opacity-60">
+               class="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm bg-white/70 dark:bg-white/[0.06] text-slate-800 dark:text-slate-100 border-white/80 dark:border-white/10 focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-900 disabled:opacity-60">
       </div>
     </div>
 
@@ -32,7 +32,7 @@
         <app-icono nombre="lock" clase="w-4 h-4" class="absolute left-3 text-slate-400 pointer-events-none" />
         <input #clave id="clave" name="password" [type]="mostrarClave() ? 'text' : 'password'" autocomplete="current-password" required
                [disabled]="enviando()" (input)="error.set(null)"
-               class="w-full pl-9 pr-11 py-2.5 rounded-lg text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-600 focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-900 disabled:opacity-60">
+               class="w-full pl-9 pr-11 py-2.5 rounded-xl text-sm bg-white/70 dark:bg-white/[0.06] text-slate-800 dark:text-slate-100 border-white/80 dark:border-white/10 focus:border-indigo-500 focus:ring-indigo-200 dark:focus:ring-indigo-900 disabled:opacity-60">
         <button type="button" (click)="mostrarClave.set(!mostrarClave())" class="absolute right-1 flex items-center justify-center w-9 h-9 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 [attr.aria-pressed]="mostrarClave()" [title]="mostrarClave() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
           <app-icono [nombre]="mostrarClave() ? 'eye-off' : 'eye'" />
@@ -48,7 +48,7 @@
     }
 
     <button type="submit" [disabled]="enviando()"
-            class="flex items-center justify-center gap-2 h-11 rounded-lg bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-70 text-white font-semibold text-sm shadow-sm transition">
+            class="flex items-center justify-center gap-2 h-11 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-600 hover:to-violet-600 disabled:opacity-70 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 transition">
       @if (enviando()) {
         <app-icono nombre="refresh-cw" clase="w-4 h-4 animate-spin" />
         <span>Ingresando…</span>
