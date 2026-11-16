@@ -102,6 +102,16 @@
       <button type="button" (mousedown)="$event.preventDefault()" (click)="agregarColumna()" class="p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition shrink-0" title="Agregar columna a la tabla donde está el cursor">
         <app-icono nombre="columna-mas" />
       </button>
+      <button type="button" (mousedown)="$event.preventDefault()" (click)="quitarFila()" class="p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition shrink-0" title="Quitar la fila donde está el cursor">
+        <app-icono nombre="fila-menos" />
+      </button>
+      <button type="button" (mousedown)="$event.preventDefault()" (click)="quitarColumna()" class="p-2 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition shrink-0" title="Quitar la columna donde está el cursor">
+        <app-icono nombre="columna-menos" />
+      </button>
+      <button type="button" (mousedown)="$event.preventDefault()" (click)="quitarTabla()" class="p-2 rounded hover:bg-rose-500/10 text-slate-700 dark:text-slate-200 hover:text-rose-600 dark:hover:text-rose-300 transition shrink-0" title="Eliminar la tabla donde está el cursor">
+        <app-icono nombre="tabla-quitar" />
+      </button>
+      <span class="w-px h-5 bg-slate-300 dark:bg-slate-600 mx-1 shrink-0"></span>
       <button type="button" (mousedown)="$event.preventDefault()" (click)="insertarCodigo()" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition shrink-0" title="Insertar bloque de código">
         <app-icono nombre="code-xml" /><span class="hidden sm:inline">Código</span>
       </button>
@@ -138,7 +148,8 @@
 
         <div #cuerpo class="contenido-nota grow shrink-0 outline-none min-h-[350px]" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Contenido del documento"
              data-placeholder="Escribe aquí… Puedes pegar o arrastrar imágenes, insertar tablas y bloques de código."
-             (input)="alEscribir()" (paste)="alPegar($event)" (keydown)="alPresionarTecla($event)"></div>
+             (input)="alEscribir()" (paste)="alPegar($event)" (keydown)="alPresionarTecla($event)"
+             (pointermove)="alMoverSobreHoja($event)" (pointerdown)="alPresionarSobreHoja($event)"></div>
       </div>
     </div>
     }

@@ -7,6 +7,7 @@ import config from '../../../../../assets/config/config.json';
 import { NotasStore } from '../../../../core/state/notas.store';
 import { AsistenteStore } from '../../../../core/state/asistente.store';
 import { ToastService } from '../../../../core/utils/toast.service';
+import { ConfirmService } from '../../../../core/utils/confirm.service';
 import { leerImagenComoBase64 } from '../../../../core/utils/imagenes';
 import { ORDEN_PRIORIDADES, PRIORIDADES } from '../../../../core/utils/prioridades';
 import { Priority } from '../../../../core/interfaces/responses/DocumentResponse';
@@ -41,6 +42,10 @@ const TABLA_INICIAL =
   '<div class="tabla-desplazable"><table><thead><tr><th>Columna 1</th><th>Columna 2</th><th>Columna 3</th></tr></thead>' +
   '<tbody><tr><td><br></td><td><br></td><td><br></td></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table></div><p><br></p>';
 
+// Distancia al borde derecho de una celda (px) en la que se puede tomar para cambiar el ancho
+const ZONA_BORDE_PX = 6;
+const ANCHO_MINIMO_COLUMNA = 48;
+
 /**
  * Hoja de edición estilo Confluence sobre un div contenteditable. Cada cambio se guarda al instante como
  * borrador local (NotasStore.actualizarBorrador); "Publicar" lo envía a la API.
@@ -59,6 +64,7 @@ export class EditorDocumentoComponent {
   private readonly _asistente = inject(AsistenteStore);
   private readonly _toastService = inject(ToastService);
   private readonly _sanitizer = inject(DomSanitizer);
+  private readonly _confirmService = inject(ConfirmService);
 
   protected readonly prioridades = PRIORIDADES;
   protected readonly ordenPrioridades = ORDEN_PRIORIDADES;
@@ -69,6 +75,7 @@ export class EditorDocumentoComponent {
 
   private cuerpoRef?: ElementRef<HTMLDivElement>;
   private rangoGuardado: Range | null = null;
+  private ajustandoColumna = false;
 
   protected readonly carpetasOrdenadas = computed(() =>
     [...this.store.carpetas()].sort((a, b) => a.path.join('/').localeCompare(b.path.join('/'), 'es')));
@@ -182,6 +189,106 @@ export class EditorDocumentoComponent {
       if (referencia) referencia.after(nueva); else fila.appendChild(nueva);
     }
     this.alEscribir();
+  }
+
+  protected quitarFila() {
+    const celda = this.celdaEnCursor();
+    if (!celda) return;
+
+    const fila = celda.parentElement as HTMLTableRowElement;
+    const tabla = celda.closest('table') as HTMLTableElement;
+    // El cursor pasa a la fila de abajo (o a la de arriba si era la última)
+    const vecina = (fila.nextElementSibling ?? fila.previousElementSibling) as HTMLTableRowElement | null;
+    fila.remove();
+
+    if (tabla.rows.length === 0) {
+      this.eliminarTablaDelDocumento(tabla);
+      return;
+    }
+    this.ubicarCursorEnCelda(vecina?.cells[Math.min(celda.cellIndex, vecina.cells.length - 1)] ?? tabla.rows[0].cells[0]);
+    this.alEscribir();
+  }
+
+  protected quitarColumna() {
+    const celda = this.celdaEnCursor();
+    if (!celda) return;
+
+    const indice = celda.cellIndex;
+    const tabla = celda.closest('table') as HTMLTableElement;
+    // La fila se toma antes de quitar la celda: una vez quitada, celda.parentElement es null
+    const filaDelCursor = celda.parentElement as HTMLTableRowElement;
+    for (const fila of Array.from(tabla.rows)) {
+      fila.cells[indice]?.remove();
+    }
+
+    if (Array.from(tabla.rows).every(fila => fila.cells.length === 0)) {
+      this.eliminarTablaDelDocumento(tabla);
+      return;
+    }
+    const destino = filaDelCursor.cells[Math.min(indice, filaDelCursor.cells.length - 1)] ?? tabla.rows[0].cells[0];
+    this.ubicarCursorEnCelda(destino);
+    this.alEscribir();
+  }
+
+  protected async quitarTabla() {
+    const celda = this.celdaEnCursor();
+    if (!celda) return;
+    const tabla = celda.closest('table') as HTMLTableElement;
+
+    const respuesta = await this._confirmService.preguntar({
+      titulo: '¿Eliminar la tabla?',
+      mensaje: `Se quitará la tabla completa (${tabla.rows.length} fila(s)) del documento. Si no publicaste, puedes recuperarla con "Descartar cambios".`,
+      opciones: [
+        { etiqueta: 'Cancelar', valor: 'no', estilo: 'secundario' },
+        { etiqueta: 'Eliminar tabla', valor: 'si', estilo: 'peligro' }
+      ]
+    });
+    if (respuesta === 'si') this.eliminarTablaDelDocumento(tabla);
+  }
+
+  // ---------- Ancho de columnas (arrastrar el borde derecho de una celda) ----------
+
+  /** Muestra el cursor de redimensionar al pasar sobre el borde derecho de una celda. */
+  protected alMoverSobreHoja(event: PointerEvent) {
+    const cuerpo = this.cuerpoRef?.nativeElement;
+    if (!cuerpo || this.ajustandoColumna) return;
+    cuerpo.style.cursor = this.bordeDeColumna(event) ? 'col-resize' : '';
+  }
+
+  /**
+   * Al presionar sobre el borde se arrastra el ancho de la columna. Los anchos se guardan en el atributo width
+   * de las celdas de la primera fila: el saneamiento de Angular conserva width, pero quita los style.
+   */
+  protected alPresionarSobreHoja(event: PointerEvent) {
+    const celda = this.bordeDeColumna(event);
+    if (!celda || event.button !== 0) return;
+    event.preventDefault();
+
+    const tabla = celda.closest('table') as HTMLTableElement;
+    const encabezado = Array.from(tabla.rows[0].cells);
+    // Al primer ajuste se fijan los anchos actuales de todas las columnas, para que solo cambie la arrastrada
+    encabezado.forEach(c => c.setAttribute('width', String(Math.round(c.getBoundingClientRect().width))));
+    tabla.classList.add('tabla-ajustada');
+
+    const columna = encabezado[Math.min(celda.cellIndex, encabezado.length - 1)];
+    const inicioX = event.clientX;
+    const anchoInicial = columna.getBoundingClientRect().width;
+    this.ajustandoColumna = true;
+    document.body.style.cursor = 'col-resize';
+
+    const mover = (e: PointerEvent) => {
+      const ancho = Math.max(ANCHO_MINIMO_COLUMNA, Math.round(anchoInicial + e.clientX - inicioX));
+      columna.setAttribute('width', String(ancho));
+    };
+    const soltar = () => {
+      document.removeEventListener('pointermove', mover);
+      document.removeEventListener('pointerup', soltar);
+      document.body.style.cursor = '';
+      this.ajustandoColumna = false;
+      this.alEscribir();
+    };
+    document.addEventListener('pointermove', mover);
+    document.addEventListener('pointerup', soltar);
   }
 
   protected insertarCodigo() {
@@ -365,6 +472,40 @@ export class EditorDocumentoComponent {
     const celda = this.elementoEnCursor()?.closest('td, th') as HTMLTableCellElement | null;
     if (!celda) this._toastService.mostrar('Ubica el cursor dentro de una tabla', 'ℹ');
     return celda;
+  }
+
+  /** La celda cuyo borde derecho está bajo el puntero (o la anterior, si el puntero está en el borde izquierdo). */
+  private bordeDeColumna(event: PointerEvent): HTMLTableCellElement | null {
+    const objetivo = event.target instanceof Element ? event.target : null;
+    const celda = objetivo?.closest('td, th') as HTMLTableCellElement | null;
+    if (!celda || !this.cuerpoRef?.nativeElement.contains(celda)) return null;
+
+    const caja = celda.getBoundingClientRect();
+    if (caja.right - event.clientX <= ZONA_BORDE_PX) return celda;
+    const fila = celda.parentElement as HTMLTableRowElement;
+    if (event.clientX - caja.left <= ZONA_BORDE_PX && celda.cellIndex > 0) return fila.cells[celda.cellIndex - 1];
+    return null;
+  }
+
+  /** Quita la tabla (con su contenedor desplazable) y deja el cursor en un párrafo en su lugar. */
+  private eliminarTablaDelDocumento(tabla: HTMLTableElement) {
+    const bloque = (tabla.parentElement?.classList.contains('tabla-desplazable') ? tabla.parentElement : tabla) as HTMLElement;
+    // Un párrafo vacío ya presente a continuación se reutiliza en vez de dejar dos
+    const siguiente = bloque.nextElementSibling as HTMLElement | null;
+    if (siguiente?.tagName === 'P' && !siguiente.textContent?.trim()) {
+      bloque.remove();
+      this.ubicarCursorEn(siguiente, false);
+    } else {
+      const parrafo = document.createElement('p');
+      parrafo.innerHTML = '<br>';
+      bloque.replaceWith(parrafo);
+      this.ubicarCursorEn(parrafo, false);
+    }
+    this.alEscribir();
+  }
+
+  private ubicarCursorEnCelda(celda: HTMLTableCellElement | undefined) {
+    if (celda) this.ubicarCursorEn(celda, false);
   }
 
   private escapar(texto: string): string {

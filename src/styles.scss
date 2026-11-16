@@ -292,6 +292,17 @@ body.fondo-app {
     min-width: 100px;
   }
 
+  // Columnas con ancho elegido a mano (atributo width en la primera fila): la tabla deja de ocupar todo el ancho
+  // y cada columna puede angostarse hasta 48 px
+  table.tabla-ajustada {
+    width: auto;
+
+    th,
+    td {
+      min-width: 48px;
+    }
+  }
+
   th {
     @apply bg-slate-50 dark:bg-slate-700/60 font-semibold text-left;
   }
